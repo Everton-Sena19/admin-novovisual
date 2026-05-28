@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Profissional</title>
+  <link rel="stylesheet" href="./profissional.css">
+</head>
+<body>
+
+  <div id="login-box">
+    <h3>Login Profissional</h3>
+    <input type="email" id="login-email" placeholder="Email">
+    <input type="password" id="login-senha" placeholder="Senha">
+    <button id="btn-login">Entrar</button>
+  </div>
+
+  <div id="profissional-content" style="display:none;">
+    <header>
+      <h1>Painel do Profissional</h1>
+      <p id="profissional-nome"></p>
+      <button id="btn-logout">Sair</button>
+    </header>
+
+    <section>
+      <h2>Minha agenda</h2>
+      <input type="date" id="data-agenda">
+      <button id="btn-buscar">Buscar</button>
+
+      <div id="lista-agendamentos">
+        Selecione uma data.
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="./profissional.js"></script>
+</body>
+</html>
