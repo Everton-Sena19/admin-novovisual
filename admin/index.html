@@ -299,8 +299,8 @@
 
           <div id="resumo-profissionais">
 
-         </div>
-         
+          </div>
+
           <div id="agenda-geral-conteudo">
 
             <div id="agenda-geral-lista">
@@ -325,8 +325,8 @@
 
             <select id="servicoCategoria" required>
               <option value="">Selecione a categoria</option>
-              <option value="Serviços de Cabelo">Serviços de Cabelo</option>
-              <option value="Serviços de Mão">Serviços de Mão</option>
+              <option value="Cabelo">Cabelo</option>
+              <option value="Unhas">Unhas</option>
               <option value="Estética">Estética</option>
             </select>
 
@@ -338,7 +338,7 @@
               </option>
 
               <option value="manicure_mao">
-                Manicure mão
+                Manicure
               </option>
 
               <option value="manicure_pe">
@@ -394,69 +394,69 @@
   </div> <!-- fecha admin-content -->
   <div id="toast"></div>
 
-  <div id="modal-confirmacao" class="modal-confirmacao">
+  <!-- MODAL EDIÇÃO -->
 
-    <div id="modal-edicao" class="modal-confirmacao">
+  <div id="modal-edicao" class="modal-confirmacao">
 
-      <div id="modal-confirmacao" class="modal-confirmacao">
+    <div class="modal-box">
 
-        <div class="modal-box">
+      <h3>
+        Editar serviço
+      </h3>
 
-          <h3 id="modal-titulo">
+      <form id="form-edicao">
 
-            <form id="form-edicao">
+        <input type="text" id="editarNome" placeholder="Nome" required>
 
-              <input type="text" id="editarNome" placeholder="Nome" required>
+        <input type="number" id="editarValor" placeholder="Valor" required>
 
-              <input type="number" id="editarValor" placeholder="Valor" required>
-
-              <input type="number" id="editarTempo" placeholder="Tempo" required>
-
-              <div class="modal-acoes">
-
-                <button type="button" id="btn-cancelar-edicao">
-                  Cancelar
-                </button>
-
-                <button type="submit">
-                  Salvar
-                </button>
-
-              </div>
-
-            </form>
-
-        </div>
-
-      </div>
-
-      <div class="modal-box">
-
-        <h3 id="modal-titulo">
-          Confirmar exclusão
-        </h3>
-
-        <p id="modal-mensagem">
-          Deseja realmente excluir?
-        </p>
+        <input type="number" id="editarTempo" placeholder="Tempo" required>
 
         <div class="modal-acoes">
 
-          <button id="btn-cancelar-modal" type="button">
+          <button type="button" id="btn-cancelar-edicao">
             Cancelar
           </button>
 
-          <button id="btn-confirmar-modal" type="button">
-            Excluir
+          <button type="submit">
+            Salvar
           </button>
 
         </div>
 
-      </div>
+      </form>
 
     </div>
 
   </div>
+
+  <!-- MODAL CONFIRMAÇÃO -->
+
+  <div id="modal-confirmacao" class="modal-confirmacao">
+
+    <div class="modal-box">
+
+      <h3 id="modal-titulo">
+        Confirmar exclusão
+      </h3>
+
+      <p id="modal-mensagem">
+        Deseja realmente excluir?
+      </p>
+
+      <div class="modal-acoes">
+
+        <button id="btn-cancelar-modal" type="button">
+          Cancelar
+        </button>
+
+        <button id="btn-confirmar-modal" type="button">
+          Excluir
+        </button>
+
+      </div>
+
+    </div>
 
   </div>
 

@@ -97,6 +97,9 @@ let perfilLogado = null;
 let agendaGeralCache = [];
 let cancelamentoTemp = null;
 
+let onConfirmar = null;
+
+
 
 function mostrarToast(
   mensagem,
@@ -120,7 +123,7 @@ function mostrarToast(
 
 function abrirModalConfirmacao({
   mensagem,
-  onConfirmar
+  onConfirmar: callback
 }) {
 
   if (!modalConfirmacao) return;
@@ -128,15 +131,26 @@ function abrirModalConfirmacao({
   modalMensagem.textContent =
     mensagem;
 
+  onConfirmar = callback;
+
   modalConfirmacao.classList.add(
     "show"
   );
 
-  function abrirModalEdicao(servico) {
+}
+ 
+function abrirModalEdicao(servico) {
+
+  console.log("FUNÇÃO ABRIR MODAL EXECUTADA");
+  console.log(servico);
+
+  console.log("modalEdicao =", modalEdicao);
 
     modalEdicao.classList.add(
       "show"
     );
+
+    console.log("CLASSE DEPOIS DO ADD:", modalEdicao.className);
 
     document.getElementById(
       "editarNome"
@@ -220,89 +234,6 @@ function abrirModalConfirmacao({
 
     };
 
-  function abrirModalEdicao(servico) {
-
-    modalEdicao.classList.add(
-      "show"
-    );
-
-    document.getElementById(
-      "editarNome"
-    ).value = servico.nome || "";
-
-    document.getElementById(
-      "editarValor"
-    ).value = servico.valor || "";
-
-    document.getElementById(
-      "editarTempo"
-    ).value = servico.tempoMin || "";
-
-    formEdicao.onsubmit =
-      async (e) => {
-
-        e.preventDefault();
-
-        await atualizarServico(
-          servico.id,
-          {
-            nome:
-              document.getElementById(
-                "editarNome"
-              ).value,
-
-            valor:
-              Number(
-                document.getElementById(
-                  "editarValor"
-                ).value
-              ),
-
-            tempoMin:
-              Number(
-                document.getElementById(
-                  "editarTempo"
-                ).value
-              )
-          }
-        );
-
-        modalEdicao.classList.remove(
-          "show"
-        );
-
-        mostrarToast(
-          "Serviço atualizado"
-        );
-
-        await carregarServicos();
-
-        await carregarDashboard();
-
-      };
-
-    btnCancelarEdicao.onclick =
-      () => {
-
-        modalEdicao.classList.remove(
-          "show"
-        );
-
-      };
-
-  }
-
-  btnCancelarModal.onclick =
-    () => {
-
-      modalConfirmacao
-        .classList.remove(
-          "show"
-        );
-
-    };
-
-}
 
 function criarSlug(texto) {
   return String(texto || "")
@@ -577,9 +508,17 @@ async function carregarServicos() {
 
   servicos.forEach((s) => {
 
-    const categoria =
+    let categoria =
       s.categoria ||
       "Sem categoria";
+
+    if (categoria === "Serviços de Cabelo") {
+      categoria = "Cabelo";
+    }
+
+    if (categoria === "Serviços de Mão") {
+      categoria = "Unhas";
+    }
 
     if (!grupos[categoria]) {
 
@@ -604,14 +543,16 @@ async function carregarServicos() {
 
          <h3 class="categoria-titulo">
 
-  ${categoria === "Serviços de Cabelo"
-          ? "💇"
-          : categoria === "Serviços de Mão"
-            ? "💅"
-            : categoria === "Estética"
-              ? "✨"
-              : "📌"
-        }
+  ${categoria === "Cabelo" || categoria === "Serviços de Cabelo"
+    ? "💇"
+    : categoria === "Unhas"
+      || categoria === "Serviços de Mão"
+      || categoria === "Serviços de Pé"
+        ? "💅"
+        : categoria === "Estética"
+          ? "✨"
+          : "📌"
+  }
 
   ${categoria}
 
@@ -735,11 +676,23 @@ formServico?.addEventListener("submit", async (e) => {
   await carregarDashboard();
 });
 
+btnCancelarEdicao.onclick =
+  () => {
+
+    modalEdicao.classList.remove(
+      "show"
+    );
+
+  };
+
+
 listaServicos?.addEventListener("click", async (event) => {
   const botaoEditar = event.target.closest(".btn-editar-servico");
   const botaoExcluir = event.target.closest(".btn-excluir-servico");
 
   if (botaoEditar) {
+
+    console.log("BOTÃO EDITAR CLICADO");
 
     abrirModalEdicao({
 

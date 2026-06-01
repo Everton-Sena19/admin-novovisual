@@ -1653,9 +1653,8 @@ button[type="submit"]:hover {
 
 /* QUANDO ATIVO */
 
-.modal-confirmacao.ativo {
-
-    display: flex;
+.modal-confirmacao.show {
+  display: flex;
 }
 
 /* BOX */
