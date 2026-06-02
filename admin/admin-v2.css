@@ -687,7 +687,7 @@ button[type="submit"]:hover {
     inset: 0;
 
     background-image:
-        url("../assets/logo-top.png");
+        url("./assets/logo-top.png");
 
     background-repeat:
         no-repeat;

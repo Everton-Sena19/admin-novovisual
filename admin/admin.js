@@ -9,6 +9,7 @@ import {
 
 import {
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -138,101 +139,94 @@ function abrirModalConfirmacao({
   );
 
 }
- 
+
 function abrirModalEdicao(servico) {
 
-  console.log("FUNÇÃO ABRIR MODAL EXECUTADA");
-  console.log(servico);
+  modalEdicao.classList.add(
+    "show"
+  );
 
-  console.log("modalEdicao =", modalEdicao);
+  document.getElementById(
+    "editarNome"
+  ).value = servico.nome || "";
 
-    modalEdicao.classList.add(
-      "show"
-    );
+  document.getElementById(
+    "editarValor"
+  ).value = servico.valor || "";
 
-    console.log("CLASSE DEPOIS DO ADD:", modalEdicao.className);
+  document.getElementById(
+    "editarTempo"
+  ).value = servico.tempoMin || "";
 
-    document.getElementById(
-      "editarNome"
-    ).value = servico.nome || "";
+  formEdicao.onsubmit =
+    async (e) => {
 
-    document.getElementById(
-      "editarValor"
-    ).value = servico.valor || "";
+      e.preventDefault();
 
-    document.getElementById(
-      "editarTempo"
-    ).value = servico.tempoMin || "";
+      await atualizarServico(
+        servico.id,
+        {
+          nome:
+            document.getElementById(
+              "editarNome"
+            ).value,
 
-    formEdicao.onsubmit =
-      async (e) => {
-
-        e.preventDefault();
-
-        await atualizarServico(
-          servico.id,
-          {
-            nome:
+          valor:
+            Number(
               document.getElementById(
-                "editarNome"
-              ).value,
+                "editarValor"
+              ).value
+            ),
 
-            valor:
-              Number(
-                document.getElementById(
-                  "editarValor"
-                ).value
-              ),
+          tempoMin:
+            Number(
+              document.getElementById(
+                "editarTempo"
+              ).value
+            )
+        }
+      );
 
-            tempoMin:
-              Number(
-                document.getElementById(
-                  "editarTempo"
-                ).value
-              )
-          }
-        );
+      modalEdicao.classList.remove(
+        "show"
+      );
 
-        modalEdicao.classList.remove(
-          "show"
-        );
+      mostrarToast(
+        "Serviço atualizado"
+      );
 
-        mostrarToast(
-          "Serviço atualizado"
-        );
+      await carregarServicos();
 
-        await carregarServicos();
-
-        await carregarDashboard();
-
-      };
-
-    btnCancelarEdicao.onclick =
-      () => {
-
-        modalEdicao.classList.remove(
-          "show"
-        );
-
-      };
-
-  }
-
-  btnConfirmarModal.onclick =
-    async () => {
-
-      modalConfirmacao
-        .classList.remove(
-          "show"
-        );
-
-      if (onConfirmar) {
-
-        await onConfirmar();
-
-      }
+      await carregarDashboard();
 
     };
+
+  btnCancelarEdicao.onclick =
+    () => {
+
+      modalEdicao.classList.remove(
+        "show"
+      );
+
+    };
+
+}
+
+btnConfirmarModal.onclick =
+  async () => {
+
+    modalConfirmacao
+      .classList.remove(
+        "show"
+      );
+
+    if (onConfirmar) {
+
+      await onConfirmar();
+
+    }
+
+  };
 
 
 function criarSlug(texto) {
@@ -262,9 +256,6 @@ btnLogin?.addEventListener("click", async () => {
     usuarioLogado = userCredential.user;
 
     await carregarPerfilUsuario();
-
-    console.log("Usuário logado:", usuarioLogado);
-    console.log("Perfil logado:", perfilLogado);
 
     aplicarPermissoes();
 
@@ -423,7 +414,7 @@ form?.addEventListener("submit", async (e) => {
     cargo,
     email,
     uid,
-    tipo: tipoAcesso,
+    tipoAcesso,
     inicioExpediente,
     fimExpediente,
     colecao: idEditando
@@ -434,37 +425,6 @@ form?.addEventListener("submit", async (e) => {
   };
 
   if (idEditando) {
-
-    await atualizarServico(
-      idEditando,
-      dadosServico
-    );
-
-    mostrarToast(
-      "Serviço atualizado"
-    );
-
-    delete formServico.dataset.editandoId;
-
-    formServico
-      .querySelector(
-        "button[type='submit']"
-      ).textContent =
-      "Salvar serviço";
-
-  } else {
-
-    await cadastrarServico({
-      ...dadosServico,
-      criadoEm:
-        new Date().toISOString()
-    });
-
-    mostrarToast(
-      "Serviço salvo com sucesso"
-    );
-
-  } if (idEditando) {
     await atualizarProfissional(idEditando, dadosProfissional);
     delete form.dataset.editandoId;
     form.querySelector("button[type='submit']").textContent = "Salvar profissional";
@@ -544,15 +504,15 @@ async function carregarServicos() {
          <h3 class="categoria-titulo">
 
   ${categoria === "Cabelo" || categoria === "Serviços de Cabelo"
-    ? "💇"
-    : categoria === "Unhas"
-      || categoria === "Serviços de Mão"
-      || categoria === "Serviços de Pé"
-        ? "💅"
-        : categoria === "Estética"
-          ? "✨"
-          : "📌"
-  }
+          ? "💇"
+          : categoria === "Unhas"
+            || categoria === "Serviços de Mão"
+            || categoria === "Serviços de Pé"
+            ? "💅"
+            : categoria === "Estética"
+              ? "✨"
+              : "📌"
+        }
 
   ${categoria}
 
@@ -692,8 +652,6 @@ listaServicos?.addEventListener("click", async (event) => {
 
   if (botaoEditar) {
 
-    console.log("BOTÃO EDITAR CLICADO");
-
     abrirModalEdicao({
 
       id:
@@ -765,6 +723,14 @@ function renderizarAgendaGeral(lista) {
 
   lista.forEach(item => {
 
+    if (!item.data) {
+
+      console.error(
+        "ITEM SEM DATA:",
+        item
+      );
+
+    }
     const data =
       item.data || "Sem data";
 
@@ -841,19 +807,19 @@ function renderizarAgendaGeral(lista) {
 
                     <strong>
 
-                      ${item.clienteNomeCompleto || "Cliente"}
+                      ${item.clienteNomeCompleto || item.clienteNome || "Cliente"}
 
                     </strong>
 
                     <span>
 
-                      ${item.servicoNome || "Serviço"}
+                      ${item.servicoNome || item.servico || "Serviço"}
 
                     </span>
 
                     <small>
 
-                      👤 ${item.profissionalNome || "Profissional"}
+                     👤 ${item.profissionalNome || item.profissional || "Profissional"}
 
                     </small>
 
@@ -1516,12 +1482,6 @@ onAuthStateChanged(auth, async (user) => {
       adminEmail.textContent = user.email;
     }
 
-    console.log("Usuário logado:", {
-      email: user.email,
-      uid: user.uid,
-      profissional: prof
-    });
-
     usuarioLogado = user;
 
     await carregarPerfilUsuario();
@@ -1564,8 +1524,6 @@ async function carregarPerfilUsuario() {
     }
 
   });
-
-  console.log("Perfil logado:", perfilLogado);
 
 }
 
@@ -1763,7 +1721,7 @@ function aplicarFiltrosAgendaGeral() {
     }
 
     if (
-      periodo === "7dias"
+      periodo === "semana"
     ) {
 
       return diffDias <= 7;
@@ -1771,7 +1729,7 @@ function aplicarFiltrosAgendaGeral() {
     }
 
     if (
-      periodo === "30dias"
+      periodo === "mes"
     ) {
 
       return (
@@ -1834,9 +1792,6 @@ function aplicarFiltrosAgendaGeral() {
   );
 
 }
-
-console.log(btnToggleAgendaGeral);
-console.log(agendaGeral);
 
 if (btnToggleAgendaGeral && agendaGeral) {
 
@@ -1917,8 +1872,6 @@ async function cancelarAgendamentoAgenda(
     );
 
   } catch (error) {
-
-    console.error(error);
 
     mostrarToast(
       "Erro ao cancelar agendamento",
@@ -2017,8 +1970,6 @@ btnConfirmarCancelamento
 
       } catch (error) {
 
-        console.error(error);
-
         mostrarToast(
           "Erro ao cancelar",
           "erro"
@@ -2062,14 +2013,6 @@ async function atualizarStatusAgendamento(
   try {
 
     if (!id || !colecao) {
-
-      console.error(
-        "ID ou coleção inválida",
-        {
-          id,
-          colecao
-        }
-      );
 
       mostrarToast(
         "Erro ao localizar agendamento",
@@ -2151,10 +2094,6 @@ document.addEventListener(
 
     if (!id || !colecao) {
 
-      console.error(
-        "ID ou coleção ausente"
-      );
-
       return;
 
     }
@@ -2201,8 +2140,6 @@ document.addEventListener(
       );
 
     } catch (error) {
-
-      console.error(error);
 
       mostrarToast(
         "Erro ao finalizar",
@@ -2303,8 +2240,6 @@ async function verificarConflitoReativacao(
     return existeConflito;
 
   } catch (error) {
-
-    console.error(error);
 
     return true;
 

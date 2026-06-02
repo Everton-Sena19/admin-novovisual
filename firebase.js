@@ -452,10 +452,6 @@ function startGlobalListeners() {
       });
       state.PROFESSIONALS = list;
       populateProfessionalSelects();
-      console.log(
-        "[GLOBAL] profissionais:",
-        list.map((p) => ({ id: p.id, nome: p.nome, colecao: p.colecao, ativo: p.ativo }))
-      );
     },
     (err) => console.error("Erro listener profissionais (global):", err)
   );
@@ -474,7 +470,6 @@ function startGlobalListeners() {
           ativo: v.ativo !== false,
         };
       });
-      console.log("[GLOBAL] serviços:", state.SERVICOS.length);
     },
     (err) => console.error("Erro listener serviços (global):", err)
   );
