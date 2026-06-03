@@ -2641,3 +2641,17 @@ function renderizarResumoProfissionais(
       }).join("");
 
 }
+
+document.addEventListener("click", (e) => {
+  const btnCancelar =
+    e.target.closest("#btn-cancelar-modal");
+
+  if (!btnCancelar) return;
+
+  const modal =
+    document.getElementById("modal-confirmacao");
+
+  if (modal) {
+    modal.classList.remove("show");
+  }
+});
