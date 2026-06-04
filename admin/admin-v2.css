@@ -1519,7 +1519,7 @@ button[type="submit"]:hover {
 
     flex: 1;
 
-    height: 42px;
+    height: 38px;
 
     border-radius: 14px;
 
@@ -1654,7 +1654,7 @@ button[type="submit"]:hover {
 /* QUANDO ATIVO */
 
 .modal-confirmacao.show {
-  display: flex;
+    display: flex;
 }
 
 /* BOX */
@@ -1798,36 +1798,35 @@ button[type="submit"]:hover {
 
 .agenda-geral-grid {
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns:
-    repeat(
-      auto-fill,
-      minmax(320px, 1fr)
-    );
+    grid-template-columns:
+        repeat(auto-fill,
+            minmax(320px, 1fr));
 
-  gap: 18px;
+    gap: 18px;
 
-  align-items: start;
+    align-items: start;
 }
+
 /* CARD */
 
 .agenda-geral-card {
 
-  position: relative;
+    position: relative;
 
-  min-height: 220px;
+    min-height: 220px;
 
-  border-radius: 24px;
+    border-radius: 24px;
 
-  padding: 22px;
+    padding: 22px;
 
-  background: #ffffff;
+    background: #ffffff;
 
-  border:
-    1px solid rgba(15,23,42,0.06);
+    border:
+        1px solid rgba(15, 23, 42, 0.06);
 
-  overflow: hidden;
+    overflow: hidden;
 }
 
 /* ========================================
@@ -2010,14 +2009,14 @@ button[type="submit"]:hover {
 
 .agenda-geral-status.cancelado {
 
-  background:
-    rgba(239,68,68,0.14);
+    background:
+        rgba(239, 68, 68, 0.14);
 
-  color:
-    #b91c1c;
+    color:
+        #b91c1c;
 
-  border:
-    1px solid rgba(239,68,68,0.18);
+    border:
+        1px solid rgba(239, 68, 68, 0.18);
 }
 
 /* INFO */
@@ -2088,20 +2087,18 @@ button[type="submit"]:hover {
 
 .agenda-geral-card.cancelado {
 
-  opacity: 0.72;
+    opacity: 0.72;
 
-  filter:
-    grayscale(0.08);
+    filter:
+        grayscale(0.08);
 
-  border:
-    1px solid rgba(239,68,68,0.14);
+    border:
+        1px solid rgba(239, 68, 68, 0.14);
 
-  background:
-    linear-gradient(
-      135deg,
-      rgba(239,68,68,0.05),
-      rgba(255,255,255,1)
-    );
+    background:
+        linear-gradient(135deg,
+            rgba(239, 68, 68, 0.05),
+            rgba(255, 255, 255, 1));
 }
 
 /* EMPTY */
@@ -2431,46 +2428,46 @@ button[type="submit"]:hover {
 
 .agenda-geral-acoes {
 
-  display: flex;
+    display: flex;
 
-  gap: 10px;
+    gap: 10px;
 
-  margin-top: 18px;
+    margin-top: 18px;
 
-  flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
 /* BOTÃO */
 
 .btn-cancelar-agenda {
 
-  height: 38px;
+    height: 38px;
 
-  padding: 0 16px;
+    padding: 0 16px;
 
-  border-radius: 12px;
+    border-radius: 12px;
 
-  background:
-    rgba(239,68,68,0.10);
+    background:
+        rgba(239, 68, 68, 0.10);
 
-  color:
-    #dc2626;
+    color:
+        #dc2626;
 
-  font-size: 13px;
+    font-size: 13px;
 
-  font-weight: 700;
+    font-weight: 700;
 
-  transition:
-    0.2s ease;
+    transition:
+        0.2s ease;
 }
 
 .btn-cancelar-agenda:hover {
 
-  background:
-    rgba(239,68,68,0.18);
+    background:
+        rgba(239, 68, 68, 0.18);
 
-  transform:
-    translateY(-1px);
+    transform:
+        translateY(-1px);
 }
 
 /* ========================================
@@ -2479,136 +2476,134 @@ button[type="submit"]:hover {
 
 .modal-cancelamento.hidden {
 
-  display: none !important;
+    display: none !important;
 }
 
 /* BACKDROP */
 
 .modal-cancelamento {
 
-  position: fixed;
+    position: fixed;
 
-  inset: 0;
+    inset: 0;
 
-  z-index: 99999;
+    z-index: 99999;
 
-  display: flex;
+    display: flex;
 
-  align-items: center;
+    align-items: center;
 
-  justify-content: center;
+    justify-content: center;
 
-  padding: 20px;
+    padding: 20px;
 
-  background:
-    rgba(15,23,42,0.60);
+    background:
+        rgba(15, 23, 42, 0.60);
 
-  backdrop-filter:
-    blur(10px);
+    backdrop-filter:
+        blur(10px);
 }
 
 /* BOX */
 
 .modal-cancelamento-container {
 
-  width: 100%;
+    width: 100%;
 
-  max-width: 480px;
+    max-width: 480px;
 
-  background: #ffffff;
+    background: #ffffff;
 
-  border-radius: 28px;
+    border-radius: 28px;
 
-  padding: 36px;
+    padding: 36px;
 
-  box-shadow:
-    0 30px 80px rgba(0,0,0,0.28);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.28);
 
-  animation:
-    modalCancelamentoFade 0.18s ease;
+    animation:
+        modalCancelamentoFade 0.18s ease;
 }
 
 /* TÍTULO */
 
 .modal-cancelamento-container h3 {
 
-  font-size: 28px;
+    font-size: 28px;
 
-  color: #111827;
+    color: #111827;
 
-  margin-bottom: 12px;
+    margin-bottom: 12px;
 }
 
 /* TEXTO */
 
 .modal-cancelamento-container p {
 
-  color: #64748b;
+    color: #64748b;
 
-  line-height: 1.6;
+    line-height: 1.6;
 
-  margin-bottom: 34px;
+    margin-bottom: 34px;
 }
 
 /* BOTÕES */
 
 .modal-cancelamento-botoes {
 
-  display: flex;
+    display: flex;
 
-  justify-content: flex-end;
+    justify-content: flex-end;
 
-  gap: 14px;
+    gap: 14px;
 }
 
 /* BOTÃO VOLTAR */
 
 .btn-cancelamento-voltar {
 
-  height: 48px;
+    height: 48px;
 
-  padding: 0 22px;
+    padding: 0 22px;
 
-  border-radius: 14px;
+    border-radius: 14px;
 
-  background:
-    rgba(148,163,184,0.12);
+    background:
+        rgba(148, 163, 184, 0.12);
 
-  color:
-    #334155;
+    color:
+        #334155;
 
-  font-size: 14px;
+    font-size: 14px;
 
-  font-weight: 700;
+    font-weight: 700;
 }
 
 /* BOTÃO CONFIRMAR */
 
 .btn-cancelamento-confirmar {
 
-  height: 48px;
+    height: 48px;
 
-  padding: 0 22px;
+    padding: 0 22px;
 
-  border-radius: 14px;
+    border-radius: 14px;
 
-  border: none;
+    border: none;
 
-  background:
-    linear-gradient(
-      135deg,
-      #dc2626,
-      #ef4444
-    );
+    background:
+        linear-gradient(135deg,
+            #dc2626,
+            #ef4444);
 
-  color: #ffffff;
+    color: #ffffff;
 
-  font-size: 14px;
+    font-size: 14px;
 
-  font-weight: 700;
+    font-weight: 700;
 
-  box-shadow:
-    0 16px 34px rgba(239,68,68,0.24);
+    box-shadow:
+        0 16px 34px rgba(239, 68, 68, 0.24);
 }
 
 /* HOVER */
@@ -2616,31 +2611,29 @@ button[type="submit"]:hover {
 .btn-cancelamento-voltar:hover,
 .btn-cancelamento-confirmar:hover {
 
-  transform:
-    translateY(-2px);
+    transform:
+        translateY(-2px);
 }
 
 /* ANIMAÇÃO */
 
 @keyframes modalCancelamentoFade {
 
-  from {
+    from {
 
-    opacity: 0;
+        opacity: 0;
 
-    transform:
-      translateY(10px)
-      scale(0.98);
-  }
+        transform:
+            translateY(10px) scale(0.98);
+    }
 
-  to {
+    to {
 
-    opacity: 1;
+        opacity: 1;
 
-    transform:
-      translateY(0)
-      scale(1);
-  }
+        transform:
+            translateY(0) scale(1);
+    }
 
 }
 
@@ -2651,41 +2644,41 @@ button[type="submit"]:hover {
 .btn-iniciar-atendimento,
 .btn-finalizar-atendimento {
 
-  height: 38px;
+    height: 38px;
 
-  padding: 0 16px;
+    padding: 0 16px;
 
-  border-radius: 12px;
+    border-radius: 12px;
 
-  border: none;
+    border: none;
 
-  font-size: 13px;
+    font-size: 13px;
 
-  font-weight: 700;
+    font-weight: 700;
 
-  transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 
 /* INICIAR */
 
 .btn-iniciar-atendimento {
 
-  background:
-    rgba(59,130,246,0.12);
+    background:
+        rgba(59, 130, 246, 0.12);
 
-  color:
-    #2563eb;
+    color:
+        #2563eb;
 }
 
 /* FINALIZAR */
 
 .btn-finalizar-atendimento {
 
-  background:
-    rgba(168,85,247,0.12);
+    background:
+        rgba(168, 85, 247, 0.12);
 
-  color:
-    #9333ea;
+    color:
+        #9333ea;
 }
 
 /* HOVER */
@@ -2693,76 +2686,76 @@ button[type="submit"]:hover {
 .btn-iniciar-atendimento:hover,
 .btn-finalizar-atendimento:hover {
 
-  transform:
-    translateY(-1px);
+    transform:
+        translateY(-1px);
 }
 
 /* REATIVAR */
 
 .btn-reativar-agenda {
 
-  height: 38px;
+    height: 38px;
 
-  padding: 0 16px;
+    padding: 0 16px;
 
-  border-radius: 12px;
+    border-radius: 12px;
 
-  border: none;
+    border: none;
 
-  background:
-    rgba(34,197,94,0.12);
+    background:
+        rgba(34, 197, 94, 0.12);
 
-  color:
-    #15803d;
+    color:
+        #15803d;
 
-  font-size: 13px;
+    font-size: 13px;
 
-  font-weight: 700;
+    font-weight: 700;
 
-  transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .btn-reativar-agenda:hover {
 
-  transform:
-    translateY(-1px);
+    transform:
+        translateY(-1px);
 
-  background:
-    rgba(34,197,94,0.18);
+    background:
+        rgba(34, 197, 94, 0.18);
 }
 
 /* FINALIZAR PENDENTE */
 
 .btn-finalizar-pendente {
 
-  height: 38px;
+    height: 38px;
 
-  padding: 0 16px;
+    padding: 0 16px;
 
-  border-radius: 12px;
+    border-radius: 12px;
 
-  border: none;
+    border: none;
 
-  background:
-    rgba(168,85,247,0.12);
+    background:
+        rgba(168, 85, 247, 0.12);
 
-  color:
-    #9333ea;
+    color:
+        #9333ea;
 
-  font-size: 13px;
+    font-size: 13px;
 
-  font-weight: 700;
+    font-weight: 700;
 
-  transition: 0.2s ease;
+    transition: 0.2s ease;
 }
 
 .btn-finalizar-pendente:hover {
 
-  transform:
-    translateY(-1px);
+    transform:
+        translateY(-1px);
 
-  background:
-    rgba(168,85,247,0.18);
+    background:
+        rgba(168, 85, 247, 0.18);
 }
 
 /* ========================================
@@ -2771,87 +2764,85 @@ button[type="submit"]:hover {
 
 .agenda-geral-resumo {
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(180px, 1fr)
-    );
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(180px, 1fr));
 
-  gap: 14px;
+    gap: 14px;
 
-  margin-bottom: 22px;
+    margin-bottom: 22px;
 }
 
 .agenda-geral-kpi {
 
-  background: #fff;
+    background: #fff;
 
-  border-radius: 18px;
+    border-radius: 18px;
 
-  padding: 18px;
+    padding: 18px;
 
-  border:
-    1px solid rgba(15,23,42,0.06);
+    border:
+        1px solid rgba(15, 23, 42, 0.06);
 
-  display: flex;
+    display: flex;
 
-  flex-direction: column;
+    flex-direction: column;
 
-  gap: 8px;
+    gap: 8px;
 }
 
 .agenda-geral-kpi span {
 
-  font-size: 13px;
+    font-size: 13px;
 
-  color: #64748b;
+    color: #64748b;
 }
 
 .agenda-geral-kpi strong {
 
-  font-size: 22px;
+    font-size: 22px;
 
-  color: #0f172a;
+    color: #0f172a;
 }
 
 /* KPI COLORS */
 
 .agenda-geral-kpi.faturamento {
 
-  border-left:
-    4px solid #22c55e;
+    border-left:
+        4px solid #22c55e;
 }
 
 .agenda-geral-kpi.finalizados {
 
-  border-left:
-    4px solid #9333ea;
+    border-left:
+        4px solid #9333ea;
 }
 
 .agenda-geral-kpi.cancelados {
 
-  border-left:
-    4px solid #ef4444;
+    border-left:
+        4px solid #ef4444;
 }
 
 .agenda-geral-kpi.atendimentos {
 
-  border-left:
-    4px solid #3b82f6;
+    border-left:
+        4px solid #3b82f6;
 }
 
 .agenda-geral-kpi.ticket {
 
-  border-left:
-    4px solid #f59e0b;
+    border-left:
+        4px solid #f59e0b;
 }
 
 .agenda-geral-kpi.cancelamento-taxa {
 
-  border-left:
-    4px solid #f97316;
+    border-left:
+        4px solid #f97316;
 }
 
 /* ========================================
@@ -2860,45 +2851,45 @@ button[type="submit"]:hover {
 
 .agenda-geral-kpi {
 
-  transition:
-    0.25s ease;
+    transition:
+        0.25s ease;
 }
 
 .agenda-geral-kpi:hover {
 
-  transform:
-    translateY(-2px);
+    transform:
+        translateY(-2px);
 
-  box-shadow:
-    0 10px 24px rgba(15,23,42,0.08);
+    box-shadow:
+        0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 /* ALERTA */
 
 .kpi-alerta {
 
-  background:
-    rgba(239,68,68,0.05);
+    background:
+        rgba(239, 68, 68, 0.05);
 
-  border-left:
-    4px solid #ef4444;
+    border-left:
+        4px solid #ef4444;
 }
 
 /* DESTAQUE */
 
 .kpi-destaque {
 
-  background:
-    rgba(34,197,94,0.06);
+    background:
+        rgba(34, 197, 94, 0.06);
 
-  box-shadow:
-    0 0 0 1px rgba(34,197,94,0.08);
+    box-shadow:
+        0 0 0 1px rgba(34, 197, 94, 0.08);
 }
 
 .agenda-geral-kpi.profissional-topo {
 
-  border-left:
-    4px solid #06b6d4;
+    border-left:
+        4px solid #06b6d4;
 }
 
 /* ========================================
@@ -2907,59 +2898,222 @@ button[type="submit"]:hover {
 
 #resumo-profissionais {
 
-  display: grid;
+    display: grid;
 
-  grid-template-columns:
-    repeat(
-      auto-fit,
-      minmax(220px, 1fr)
-    );
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(220px, 1fr));
 
-  gap: 16px;
+    gap: 16px;
 
-  margin-bottom: 24px;
+    margin-bottom: 24px;
 }
 
 .profissional-card {
 
-  background: #fff;
+    background: #fff;
 
-  border-radius: 18px;
+    border-radius: 18px;
 
-  padding: 18px;
+    padding: 18px;
 
-  border:
-    1px solid rgba(15,23,42,0.06);
+    border:
+        1px solid rgba(15, 23, 42, 0.06);
 
-  display: flex;
+    display: flex;
 
-  flex-direction: column;
+    flex-direction: column;
 
-  gap: 10px;
+    gap: 10px;
 
-  transition:
-    0.25s ease;
+    transition:
+        0.25s ease;
 }
 
 .profissional-card:hover {
 
-  transform:
-    translateY(-2px);
+    transform:
+        translateY(-2px);
 
-  box-shadow:
-    0 10px 24px rgba(15,23,42,0.08);
+    box-shadow:
+        0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .profissional-card strong {
 
-  font-size: 18px;
+    font-size: 18px;
 
-  color: #0f172a;
+    color: #0f172a;
 }
 
 .profissional-card small {
 
-  color: #64748b;
+    color: #64748b;
 
-  font-size: 13px;
+    font-size: 13px;
+}
+
+.servico-imagem {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+}
+
+.servico-imagem img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+    display: block;
+}
+
+.servico-info {
+    margin-bottom: 12px;
+}
+
+.categoria-titulo {
+    margin: 24px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ececec;
+    font-size: 1.2rem;
+}
+
+/* ========================================
+   CATEGORIAS DE SERVIÇOS
+======================================== */
+
+.categoria-servico {
+    margin: 24px 0;
+    padding: 18px;
+    border-radius: 20px;
+}
+
+.categoria-servico.estetica {
+    background: #f2f8ff;
+    border: 1px solid #d8e9ff;
+}
+
+.categoria-servico.cabelo {
+    background: #FAF9BF;
+    border: 1px solid #ffe3a3;
+}
+
+.categoria-servico.unhas {
+    background: #fff0f7;
+    border: 1px solid #ffc6e2;
+}
+
+.categoria-titulo {
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    font-size: 22px;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+
+    cursor: pointer;
+
+    -webkit-user-select: none;
+    user-select: none;
+
+    transition: .2s;
+}
+
+.categoria-titulo:hover {
+    transform: translateX(4px);
+}
+
+.servico-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 18px;
+    margin-bottom: 16px;
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, .04);
+}
+
+.servico-info {
+    flex: 1;
+}
+
+.servico-acoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 0;
+    min-width: 110px;
+}
+
+.servico-imagem {
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+}
+
+.servico-imagem img {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.servico-info {
+    flex: 1;
+}
+
+.servico-info strong {
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* ==========================================
+   NOVO LAYOUT DOS CARDS DE SERVIÇO
+========================================== */
+
+.servico-nome {
+
+    display: block;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    margin-bottom: 12px;
+
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid rgba(0,0,0,.08);
+
+}
+
+.servico-corpo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+}
+
+.servico-info {
+
+    flex: 1;
+
+}
+
+.servico-acoes {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 10px;
+
 }

@@ -444,6 +444,33 @@ form?.addEventListener("submit", async (e) => {
   await carregarDashboard();
 });
 
+function corrigirCaminhoImagemServico(fotoUrl) {
+  if (!fotoUrl) {
+    return "./assets/logo-top.png";
+  }
+
+  if (
+    fotoUrl.startsWith("http://") ||
+    fotoUrl.startsWith("https://")
+  ) {
+    return fotoUrl;
+  }
+
+  if (fotoUrl.startsWith("/assets/")) {
+    return ".." + fotoUrl;
+  }
+
+  if (fotoUrl.startsWith("assets/")) {
+    return "../" + fotoUrl;
+  }
+
+  if (fotoUrl.startsWith("./assets/")) {
+    return "." + fotoUrl.replace("./", "/");
+  }
+
+  return fotoUrl;
+}
+
 async function carregarServicos() {
 
   listaServicos.innerHTML =
@@ -499,11 +526,28 @@ async function carregarServicos() {
     Object.entries(grupos)
       .map(([categoria, itens]) => `
 
-        <div class="categoria-servico">
+        <div class="categoria-servico ${categoria === "Estética"
+          ? "estetica"
+          : categoria === "Cabelo"
+            || categoria === "Serviços de Cabelo"
+            ? "cabelo"
+            : categoria === "Unhas"
+              || categoria === "Serviços de Mão"
+              || categoria === "Serviços de Pé"
+              ? "unhas"
+              : ""
+        }">
 
-         <h3 class="categoria-titulo">
+         <h3
+            class="categoria-titulo"
+            data-categoria="${categoria}"
+          >
 
-  ${categoria === "Cabelo" || categoria === "Serviços de Cabelo"
+            <span>
+
+              ▼     
+
+              ${categoria === "Cabelo" || categoria === "Serviços de Cabelo"
           ? "💇"
           : categoria === "Unhas"
             || categoria === "Serviços de Mão"
@@ -514,34 +558,53 @@ async function carregarServicos() {
               : "📌"
         }
 
-  ${categoria}
+              ${categoria}
 
-</h3>
+              (${itens.length})
 
-          <div class="servicos-grid">
+            </span>
 
+          </h3>
+
+          <div
+            class="servicos-grid"
+            data-categoria="${categoria}"
+          >
             ${itens.map(s => `
 
               <div class="servico-card">
 
-                <strong>
-                  ${s.nome || "Sem nome"}
-                </strong>
+              <strong class="servico-nome">
+                ${s.nome || "Sem nome"}
+              </strong>
 
-                <p>
-                  💰 R$
-                  ${Number(
-          s.valor || 0
-        ).toFixed(2)}
-                </p>
+              <div class="servico-corpo">
 
-                <p>
-                  ⏱️
-                  ${s.tempoMin || 0}
-                  minutos
-                </p>
+                <div class="servico-imagem">
 
-                <div class="servico-acoes">
+                  <img
+                    src="${corrigirCaminhoImagemServico(s.fotoUrl)}"
+                    alt="${s.nome || 'Serviço'}"
+                  >
+
+                </div>
+
+                <div class="servico-info">
+
+                  <p>
+                    💰 R$
+                    ${Number(
+                      s.valor || 0
+                    ).toFixed(2)}
+                  </p>
+
+                  <p>
+                    ⏱️
+                    ${s.tempoMin || 0}
+                    minutos
+                  </p>
+
+                  <div class="servico-acoes">
 
                   <button
                     type="button"
@@ -2654,4 +2717,36 @@ document.addEventListener("click", (e) => {
   if (modal) {
     modal.classList.remove("show");
   }
+});
+
+document.addEventListener("click", (e) => {
+
+  const titulo =
+    e.target.closest(".categoria-titulo");
+
+  if (!titulo) return;
+
+  const categoria =
+    titulo.dataset.categoria;
+
+  const grid =
+    document.querySelector(
+      `.servicos-grid[data-categoria="${categoria}"]`
+    );
+
+  if (!grid) return;
+
+  const aberto =
+    grid.style.display !== "none";
+
+  grid.style.display =
+    aberto ? "none" : "block";
+
+  titulo.querySelector("span").innerHTML =
+    titulo.querySelector("span").innerHTML
+      .replace(
+        aberto ? "▼" : "▶",
+        aberto ? "▶" : "▼"
+      );
+
 });
