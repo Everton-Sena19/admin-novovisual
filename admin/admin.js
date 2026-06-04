@@ -570,17 +570,12 @@ async function carregarServicos() {
             class="servicos-grid"
             data-categoria="${categoria}"
           >
-            ${itens.map(s => `
+
+                      ${itens.map(s => `
 
               <div class="servico-card">
 
-              <strong class="servico-nome">
-                ${s.nome || "Sem nome"}
-              </strong>
-
-              <div class="servico-corpo">
-
-                <div class="servico-imagem">
+                  <div class="servico-imagem">
 
                   <img
                     src="${corrigirCaminhoImagemServico(s.fotoUrl)}"
@@ -591,11 +586,15 @@ async function carregarServicos() {
 
                 <div class="servico-info">
 
+                  <strong>
+                    ${s.nome || "Sem nome"}
+                  </strong>
+
                   <p>
                     💰 R$
                     ${Number(
-                      s.valor || 0
-                    ).toFixed(2)}
+          s.valor || 0
+        ).toFixed(2)}
                   </p>
 
                   <p>
@@ -604,7 +603,9 @@ async function carregarServicos() {
                     minutos
                   </p>
 
-                  <div class="servico-acoes">
+                </div>
+
+                <div class="servico-acoes">
 
                   <button
                     type="button"
@@ -641,6 +642,7 @@ async function carregarServicos() {
       `).join("");
 
 }
+
 
 formServico?.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -760,19 +762,19 @@ function renderizarAgendaGeral(lista) {
 
     agendaGeralLista.innerHTML = `
 
-      <div class="agenda-geral-vazia">
+    <div class="agenda-geral-vazia">
 
-        <strong>
-          Nenhum atendimento encontrado
-        </strong>
+      <strong>
+        Nenhum atendimento encontrado
+      </strong>
 
-        <span>
-          Tente alterar os filtros da agenda.
-        </span>
+      <span>
+        Tente alterar os filtros da agenda.
+      </span>
 
-      </div>
+    </div>
 
-    `;
+  `;
 
     return;
 
@@ -818,7 +820,7 @@ function renderizarAgendaGeral(lista) {
 
         return `
 
-          <div class="agenda-geral-grupo">
+      < div class="agenda-geral-grupo" >
 
             <div class="agenda-geral-data">
 
@@ -962,9 +964,9 @@ function renderizarAgendaGeral(lista) {
 
             </div>
 
-          </div>
+          </ >
 
-        `;
+      `;
 
       }).join("");
 
@@ -1098,10 +1100,10 @@ async function carregarAgendaGeral() {
   agendaGeralCache.sort((a, b) => {
 
     const dataA =
-      `${a.data} ${a.hora}`;
+      `${a.data} ${a.hora} `;
 
     const dataB =
-      `${b.data} ${b.hora}`;
+      `${b.data} ${b.hora} `;
 
     return (
       new Date(dataB) -
@@ -1220,17 +1222,17 @@ async function carregarDashboard() {
 
   dashboardResumo.innerHTML = `
 
-  <div class="kpi-card">
+      < div class="kpi-card" >
     <span>📅 Hoje</span>
     <strong>${resumo.totalHoje}</strong>
     <small>Agendamentos</small>
-  </div>
+  </ >
 
-  <div class="kpi-card">
-    <span>🗓️ Mês</span>
-    <strong>${resumo.totalMes}</strong>
-    <small>Agendamentos</small>
-  </div>
+      <div class="kpi-card">
+        <span>🗓️ Mês</span>
+        <strong>${resumo.totalMes}</strong>
+        <small>Agendamentos</small>
+      </div>
 
   ${esconderFinanceiroGlobal
       ? `
@@ -1269,13 +1271,13 @@ async function carregarDashboard() {
       `
     }
 
-  <div class="kpi-card">
-    <span>👥 Ativos</span>
-    <strong>${resumo.profissionaisAtivos}</strong>
-    <small>Profissionais</small>
-  </div>
+    <div class="kpi-card">
+      <span>👥 Ativos</span>
+      <strong>${resumo.profissionaisAtivos}</strong>
+      <small>Profissionais</small>
+    </div>
 
-`;
+    `;
 
   if (!agendamentos.length) {
 
@@ -1288,9 +1290,9 @@ async function carregarDashboard() {
 
   agendaOperacionalLista.innerHTML = `
 
-  <div class="agenda-operacional-grid">
+      < div class="agenda-operacional-grid" >
 
-${agendaOrdenada
+        ${agendaOrdenada
       .filter(item =>
         item.status !==
         "finalizado"
@@ -1374,16 +1376,17 @@ ${agendaOrdenada
 
   </div>
 
-`).join("")}
+`).join("")
+    }
 
-</div>
-`;
+</div >
+      `;
 
   agendaConcluidosLista.innerHTML = `
 
-<div class="agenda-operacional-grid">
+      < div class="agenda-operacional-grid" >
 
-${agendaConcluidos.map(item => `
+        ${agendaConcluidos.map(item => `
 
   <div class="agenda-operacional-card finalizado">
 
@@ -1422,10 +1425,11 @@ ${agendaConcluidos.map(item => `
 
   </div>
 
-`).join("")}
+`).join("")
+    }
 
-</div>
-`;
+</div >
+      `;
 
   agendaOperacionalLista
     ?.querySelectorAll(".btn-status")
@@ -2511,7 +2515,7 @@ function atualizarResumoAgendaGeral(
 
     kpiFaturamento.textContent =
 
-      `R$ ${faturamento.toFixed(2)}`;
+      `R$ ${faturamento.toFixed(2)} `;
 
   }
 
@@ -2540,7 +2544,7 @@ function atualizarResumoAgendaGeral(
 
     kpiTicketMedio.textContent =
 
-      `R$ ${ticketMedio.toFixed(2)}`;
+      `R$ ${ticketMedio.toFixed(2)} `;
 
   }
 
@@ -2548,7 +2552,7 @@ function atualizarResumoAgendaGeral(
 
     kpiTaxaCancelamento.textContent =
 
-      `${taxaCancelamento.toFixed(0)}%`;
+      `${taxaCancelamento.toFixed(0)}% `;
 
   }
 
@@ -2668,7 +2672,7 @@ function renderizarResumoProfissionais(
 
         return `
 
-          <div class="profissional-card">
+      < div class="profissional-card" >
 
             <strong>
 
@@ -2697,9 +2701,9 @@ function renderizarResumoProfissionais(
 
             </small>
 
-          </div>
+          </div >
 
-        `;
+      `;
 
       }).join("");
 
@@ -2731,7 +2735,7 @@ document.addEventListener("click", (e) => {
 
   const grid =
     document.querySelector(
-      `.servicos-grid[data-categoria="${categoria}"]`
+      `.servicos - grid[data - categoria="${categoria}"]`
     );
 
   if (!grid) return;
