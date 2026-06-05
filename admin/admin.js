@@ -820,7 +820,7 @@ function renderizarAgendaGeral(lista) {
 
         return `
 
-      < div class="agenda-geral-grupo" >
+        <div class="agenda-geral-grupo">
 
             <div class="agenda-geral-data">
 
@@ -964,7 +964,7 @@ function renderizarAgendaGeral(lista) {
 
             </div>
 
-          </ >
+          </div>
 
       `;
 
@@ -1222,11 +1222,11 @@ async function carregarDashboard() {
 
   dashboardResumo.innerHTML = `
 
-      < div class="kpi-card" >
+      <div class="kpi-card">
     <span>📅 Hoje</span>
     <strong>${resumo.totalHoje}</strong>
     <small>Agendamentos</small>
-  </ >
+  </div>
 
       <div class="kpi-card">
         <span>🗓️ Mês</span>
@@ -1290,7 +1290,7 @@ async function carregarDashboard() {
 
   agendaOperacionalLista.innerHTML = `
 
-      < div class="agenda-operacional-grid" >
+      <div class="agenda-operacional-grid">
 
         ${agendaOrdenada
       .filter(item =>
@@ -1379,12 +1379,12 @@ async function carregarDashboard() {
 `).join("")
     }
 
-</div >
+</div>
       `;
 
   agendaConcluidosLista.innerHTML = `
 
-      < div class="agenda-operacional-grid" >
+      <div class="agenda-operacional-grid">
 
         ${agendaConcluidos.map(item => `
 
@@ -1426,9 +1426,10 @@ async function carregarDashboard() {
   </div>
 
 `).join("")
-    }
 
-</div >
+}
+
+</div>
       `;
 
   agendaOperacionalLista
@@ -2269,6 +2270,14 @@ document.addEventListener(
   }
 );
 
+function hhmmToMin(hhmm) {
+  const [h, m] = String(hhmm || "00:00")
+    .split(":")
+    .map(Number);
+
+  return (h * 60) + (m || 0);
+}
+
 async function verificarConflitoReativacao(
   agendamento
 ) {
@@ -2284,22 +2293,59 @@ async function verificarConflitoReativacao(
     const snapshot =
       await getDocs(reservasRef);
 
+    const inicioAtual =
+      hhmmToMin(agendamento.hora);
+
+    const duracaoAtual =
+      Number(
+        agendamento.servicoTempoMin ||
+        agendamento.tempoMin ||
+        30
+      );
+
+    const fimAtual =
+      inicioAtual + duracaoAtual;
+
     const existeConflito =
       snapshot.docs.some(docItem => {
+
+        if (
+          docItem.id === agendamento.id
+        ) {
+          return false;
+        }
 
         const item =
           docItem.data();
 
+        if (
+          item.status === "cancelado"
+        ) {
+          return false;
+        }
+
+        if (
+          item.data !== agendamento.data
+        ) {
+          return false;
+        }
+
+        const inicioItem =
+          hhmmToMin(item.hora);
+
+        const duracaoItem =
+          Number(
+            item.servicoTempoMin ||
+            item.tempoMin ||
+            30
+          );
+
+        const fimItem =
+          inicioItem + duracaoItem;
+
         return (
-
-          docItem.id !== agendamento.id &&
-
-          item.data === agendamento.data &&
-
-          item.hora === agendamento.hora &&
-
-          item.status !== "cancelado"
-
+          inicioAtual < fimItem &&
+          inicioItem < fimAtual
         );
 
       });
@@ -2307,6 +2353,11 @@ async function verificarConflitoReativacao(
     return existeConflito;
 
   } catch (error) {
+
+    console.error(
+      "[REATIVAR]",
+      error
+    );
 
     return true;
 
@@ -2672,7 +2723,7 @@ function renderizarResumoProfissionais(
 
         return `
 
-      < div class="profissional-card" >
+      <div class="profissional-card">
 
             <strong>
 
@@ -2701,7 +2752,7 @@ function renderizarResumoProfissionais(
 
             </small>
 
-          </div >
+          </div>
 
       `;
 
@@ -2735,7 +2786,7 @@ document.addEventListener("click", (e) => {
 
   const grid =
     document.querySelector(
-      `.servicos - grid[data - categoria="${categoria}"]`
+     `.servicos-grid[data-categoria="${categoria}"]`
     );
 
   if (!grid) return;
