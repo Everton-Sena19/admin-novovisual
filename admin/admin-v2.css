@@ -134,6 +134,40 @@ body {
     position: relative;
 
     overflow-x: hidden;
+
+    overflow: hidden;
+}
+
+.main-content::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    background-image: url("./assets/logo-top.png");
+
+    background-repeat: no-repeat;
+
+    background-position: center 75%;
+
+    background-size: 500px;
+
+    opacity: 0.03;
+
+    pointer-events: none;
+
+    z-index: 5;
+
+}
+
+.main-content > * {
+
+    position: relative;
+
+    z-index: 4;
+
 }
 
 /* ========================================
@@ -686,26 +720,24 @@ button[type="submit"]:hover {
 
     inset: 0;
 
-    background-image:
-        url("./assets/logo-top.png");
+    background-image: url("./assets/logo-top.png");
 
-    background-repeat:
-        no-repeat;
+    background-repeat: no-repeat;
 
-    background-position:
-        center;
+    background-position: center 75%;
 
-    background-size:
-        620px;
+    background-size: 550px;
 
-    opacity: 0.025;
+    opacity: 0.045;
 
-    filter:
-        blur(0.4px);
+    filter: sepia(1);
+
+    mix-blend-mode: multiply;
 
     pointer-events: none;
 
-    z-index: 0;
+    z-index: 5;
+
 }
 
 .main-content>* {
@@ -1759,13 +1791,13 @@ button[type="submit"]:hover {
 
 .agenda-geral-data {
 
-    font-size: 13px;
+    font-size: 16px;
 
     font-weight: 900;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
 
-    color: #64748b;
+    color: #334155;
 
     text-transform: uppercase;
 
@@ -1815,7 +1847,7 @@ button[type="submit"]:hover {
 
     position: relative;
 
-    min-height: 220px;
+    min-height: 190px;
 
     border-radius: 24px;
 
@@ -1931,16 +1963,18 @@ button[type="submit"]:hover {
 
 .agenda-geral-hora {
 
-    width: 74px;
+    width: 60px;
 
-    height: 74px;
+    height: 60px;
 
-    border-radius: 20px;
+    border-radius: 18px;
 
     background:
-        linear-gradient(135deg,
+        linear-gradient(
+            135deg,
             #0f172a,
-            #1e293b);
+            #1e293b
+        );
 
     color: #ffffff;
 
@@ -1955,6 +1989,8 @@ button[type="submit"]:hover {
     font-weight: 800;
 
     letter-spacing: -1px;
+
+    margin-bottom: 12px;
 }
 
 /* STATUS */
@@ -2027,25 +2063,29 @@ button[type="submit"]:hover {
 
     flex-direction: column;
 
-    gap: 12px;
+    gap: 8px;
 
     margin-top: -4px;
 }
 
 .agenda-geral-info strong {
 
-    font-size: 28px;
+    font-size: 15px;
 
-    line-height: 1.1;
+    line-height: 1.3;
 
-    color: #111827;
+    font-weight: 700;
+
+    color: #374151;
 }
 
 .agenda-geral-info span {
 
-    font-size: 17px;
+    font-size: 16px;
 
-    color: #374151;
+    font-weight: 700;
+
+    color: #111827;
 }
 
 .agenda-geral-info small {
@@ -2056,9 +2096,11 @@ button[type="submit"]:hover {
 
     gap: 8px;
 
-    font-size: 13px;
+    font-size: 16px;
 
-    color: #6b7280;
+    font-weight: 600;
+
+    color: #475569;
 }
 
 /* ESTADOS VISUAIS */
@@ -2176,11 +2218,11 @@ button[type="submit"]:hover {
 
     .agenda-geral-hora {
 
-        width: 68px;
+        width: 60px;
 
-        height: 68px;
+        height: 60px;
 
-        font-size: 20px;
+        font-size: 18px;
     }
 
 }
@@ -3102,4 +3144,32 @@ button[type="submit"]:hover {
     align-items: center;
 
     gap: 12px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.badge-encaixe{
+
+  display:inline-block;
+
+  margin:4px 0;
+
+  padding:3px 8px;
+
+  border-radius:20px;
+
+  font-size:10px;
+
+  font-weight:700;
+
+  background:#fff7ed;
+
+  color:#ea580c;
+
+}
+
+.agenda-geral-info > * {
+  margin-bottom: 6px;
 }

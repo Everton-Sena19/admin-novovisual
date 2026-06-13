@@ -667,6 +667,7 @@ canvas {
 
     padding: 16px;
   }
+
   .dashboard-grid {
 
     grid-template-columns: 1fr;
@@ -734,10 +735,10 @@ canvas {
   gap: 10px;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.06);
+    0 10px 30px rgba(0, 0, 0, 0.06);
 
   border:
-    1px solid rgba(0,0,0,0.04);
+    1px solid rgba(0, 0, 0, 0.04);
 
   transition:
     transform 0.2s ease,
@@ -750,7 +751,7 @@ canvas {
     translateY(-3px);
 
   box-shadow:
-    0 18px 40px rgba(0,0,0,0.10);
+    0 18px 40px rgba(0, 0, 0, 0.10);
 }
 
 .kpi-card span {
@@ -1027,10 +1028,10 @@ canvas {
   margin-bottom: 28px;
 
   box-shadow:
-    0 10px 30px rgba(0,0,0,0.06);
+    0 10px 30px rgba(0, 0, 0, 0.06);
 
   border:
-    1px solid rgba(0,0,0,0.04);
+    1px solid rgba(0, 0, 0, 0.04);
 }
 
 .grafico-topo {
@@ -1086,10 +1087,10 @@ canvas {
   gap: 18px;
 
   border:
-    1px solid rgba(0,0,0,0.04);
+    1px solid rgba(0, 0, 0, 0.04);
 
   box-shadow:
-    0 8px 20px rgba(0,0,0,0.05);
+    0 8px 20px rgba(0, 0, 0, 0.05);
 
   transition:
     transform 0.2s ease,
@@ -1102,7 +1103,7 @@ canvas {
     translateY(-2px);
 
   box-shadow:
-    0 12px 28px rgba(0,0,0,0.08);
+    0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
 .agenda-horario {
@@ -1114,11 +1115,9 @@ canvas {
   border-radius: 18px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #111827,
-      #1f2937
-    );
+      #1f2937);
 
   color: #fff;
 
@@ -1221,10 +1220,10 @@ canvas {
   gap: 20px;
 
   border:
-    1px solid rgba(0,0,0,0.05);
+    1px solid rgba(0, 0, 0, 0.05);
 
   box-shadow:
-    0 8px 24px rgba(0,0,0,0.05);
+    0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 .agenda-operacional-hora {
@@ -1236,11 +1235,9 @@ canvas {
   border-radius: 18px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #111827,
-      #1f2937
-    );
+      #1f2937);
 
   color: #fff;
 
@@ -1297,7 +1294,7 @@ canvas {
 .agenda-status.confirmado {
 
   background:
-    rgba(34,197,94,0.12);
+    rgba(34, 197, 94, 0.12);
 
   color:
     #16a34a;
@@ -1306,7 +1303,7 @@ canvas {
 .agenda-status.atendimento {
 
   background:
-    rgba(59,130,246,0.12);
+    rgba(59, 130, 246, 0.12);
 
   color:
     #2563eb;
@@ -1315,7 +1312,7 @@ canvas {
 .agenda-status.finalizado {
 
   background:
-    rgba(168,85,247,0.12);
+    rgba(168, 85, 247, 0.12);
 
   color:
     #9333ea;
@@ -1324,7 +1321,7 @@ canvas {
 .agenda-status.cancelado {
 
   background:
-    rgba(239,68,68,0.12);
+    rgba(239, 68, 68, 0.12);
 
   color:
     #dc2626;
@@ -1365,7 +1362,7 @@ canvas {
 .btn-status.atendimento {
 
   background:
-    rgba(59,130,246,0.12);
+    rgba(59, 130, 246, 0.12);
 
   color:
     #2563eb;
@@ -1374,7 +1371,7 @@ canvas {
 .btn-status.finalizado {
 
   background:
-    rgba(168,85,247,0.12);
+    rgba(168, 85, 247, 0.12);
 
   color:
     #9333ea;
@@ -1383,7 +1380,7 @@ canvas {
 .btn-status.cancelado {
 
   background:
-    rgba(239,68,68,0.12);
+    rgba(239, 68, 68, 0.12);
 
   color:
     #dc2626;
@@ -1408,67 +1405,60 @@ canvas {
     scale(1.05);
 
   box-shadow:
-    0 8px 18px rgba(0,0,0,0.10);
+    0 8px 18px rgba(0, 0, 0, 0.10);
 
   border:
-    2px solid rgba(255,255,255,0.7);
+    2px solid rgba(255, 255, 255, 0.7);
 }
 
 .agenda-operacional-card.atendimento {
 
   background:
-    rgba(59,130,246,0.05);
+    rgba(59, 130, 246, 0.05);
 
   border:
-    1px solid rgba(59,130,246,0.12);
+    1px solid rgba(59, 130, 246, 0.12);
 }
 
 .agenda-operacional-card.cancelado {
 
   background:
-    rgba(239,68,68,0.05);
+    rgba(239, 68, 68, 0.05);
 
   border:
-    1px solid rgba(239,68,68,0.12);
+    1px solid rgba(239, 68, 68, 0.12);
 
   opacity: 0.75;
 }
 
-.agenda-concluidos
-.agenda-operacional-card {
+.agenda-concluidos .agenda-operacional-card {
 
   background:
-    rgba(99,102,241,0.03);
+    rgba(99, 102, 241, 0.03);
 
   border:
-    1px solid rgba(99,102,241,0.08);
+    1px solid rgba(99, 102, 241, 0.08);
 
   opacity: 0.82;
 }
 
-.agenda-concluidos
-.agenda-operacional-hora {
+.agenda-concluidos .agenda-operacional-hora {
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #6b7280,
-      #9ca3af
-    );
+      #9ca3af);
 }
 
-.agenda-concluidos
-.agenda-operacional-info strong {
+.agenda-concluidos .agenda-operacional-info strong {
 
   color:
     #4b5563;
 }
 
-.agenda-concluidos
-.agenda-operacional-info span,
+.agenda-concluidos .agenda-operacional-info span,
 
-.agenda-concluidos
-.agenda-operacional-info small {
+.agenda-concluidos .agenda-operacional-info small {
 
   color:
     #9ca3af;
@@ -1507,7 +1497,7 @@ canvas {
   justify-content: center;
 
   box-shadow:
-    0 10px 25px rgba(0,0,0,0.18);
+    0 10px 25px rgba(0, 0, 0, 0.18);
 }
 
 @media (max-width: 900px) {
@@ -1694,10 +1684,10 @@ canvas {
   padding: 22px;
 
   border:
-    1px solid rgba(0,0,0,0.05);
+    1px solid rgba(0, 0, 0, 0.05);
 
   box-shadow:
-    0 10px 24px rgba(0,0,0,0.05);
+    0 10px 24px rgba(0, 0, 0, 0.05);
 
   display: flex;
 
@@ -1753,7 +1743,7 @@ canvas {
 .agenda-geral-status.confirmado {
 
   background:
-    rgba(34,197,94,0.10);
+    rgba(34, 197, 94, 0.10);
 
   color:
     #16a34a;
@@ -1762,7 +1752,7 @@ canvas {
 .agenda-geral-status.atendimento {
 
   background:
-    rgba(59,130,246,0.10);
+    rgba(59, 130, 246, 0.10);
 
   color:
     #2563eb;
@@ -1771,7 +1761,7 @@ canvas {
 .agenda-geral-status.finalizado {
 
   background:
-    rgba(168,85,247,0.12);
+    rgba(168, 85, 247, 0.12);
 
   color:
     #9333ea;
@@ -1780,9 +1770,97 @@ canvas {
 .agenda-geral-status.cancelado {
 
   background:
-    rgba(239,68,68,0.10);
+    rgba(239, 68, 68, 0.10);
 
   color:
     #dc2626;
 }
 
+.badge-proximo {
+
+  background:
+    linear-gradient(135deg,
+      #f59e0b,
+      #fbbf24);
+
+  color: #ffffff;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+
+  padding: 7px 12px;
+
+  border-radius: 999px;
+
+  box-shadow: 0 10px 24px rgba(245, 158, 11, 0.25);
+
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+
+  .agenda-geral-card {
+
+    padding: 18px;
+
+  }
+
+  .agenda-geral-card-topo {
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+  }
+
+  .agenda-geral-topo-direita {
+
+    width: 100%;
+
+    align-items: flex-start;
+
+  }
+.agenda-geral-hora {
+
+    width: 74px;
+
+    height: 74px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1e293b
+        );
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 22px;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    margin-bottom: 12px;
+}
+
+  .badge-proximo {
+
+    position: static;
+
+  }
+
+}

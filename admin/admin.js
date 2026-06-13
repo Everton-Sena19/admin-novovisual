@@ -4,7 +4,8 @@ import {
   collection,
   getDocs,
   updateDoc,
-  doc
+  doc,
+  addDoc
 } from "../firebase.js";
 
 import {
@@ -93,6 +94,7 @@ const btnConfirmarCancelamento = document.getElementById("btn-confirmar-cancelam
 let dadosExistentes = null;
 let chartFaturamento = null;
 let profissionaisCache = [];
+let servicosCache = [];
 let usuarioLogado = null;
 let perfilLogado = null;
 let agendaGeralCache = [];
@@ -270,7 +272,10 @@ async function carregar() {
   const dados = await buscarProfissionais();
 
   profissionaisCache = dados;
+
   preencherSelectProfissionaisServico();
+
+  preencherSelectNovoAtendimento();
 
   if (!dados.length) {
     lista.innerHTML = "Nenhum profissional";
@@ -324,6 +329,224 @@ function preencherSelectProfissionaisServico() {
       ${p.nome}
     </option>
   `).join("");
+}
+
+function preencherSelectNovoAtendimento() {
+
+  const select =
+    document.getElementById(
+      "novoProfissional"
+    );
+
+  if (!select) return;
+
+  select.innerHTML = `
+
+    <option value="">
+      Selecione o profissional
+    </option>
+
+    ${profissionaisCache.map(p => `
+
+      <option value="${p.id}">
+        ${p.nome}
+      </option>
+
+    `).join("")}
+
+  `;
+}
+
+document.addEventListener(
+  "change",
+  async (e) => {
+
+    if (
+      e.target.id ===
+      "novoProfissional"
+    ) {
+
+      preencherSelectServicosNovoAtendimento(
+        e.target.value
+      );
+
+      document.getElementById("novoHora").innerHTML = `
+        <option value="">
+          Selecione um horário
+        </option>
+      `;
+
+      return;
+    }
+
+    if (
+      e.target.id === "novoServico" ||
+      e.target.id === "novoData"
+    ) {
+
+      await carregarHorariosNovoAgendamento();
+
+    }
+
+  }
+);
+
+function preencherSelectServicosNovoAtendimento(
+  profissionalId = ""
+) {
+
+  const select =
+    document.getElementById(
+      "novoServico"
+    );
+
+  if (!select) return;
+
+  const servicosFiltrados =
+    profissionalId
+      ? servicosCache.filter(
+        s =>
+          s.profissionalId ===
+          profissionalId
+      )
+      : [];
+
+  select.innerHTML = `
+
+    <option value="">
+      Selecione o serviço
+    </option>
+
+    ${servicosFiltrados.map(servico => `
+
+      <option value="${servico.id}">
+        ${servico.nome}
+      </option>
+
+    `).join("")}
+
+  `;
+}
+
+function minToHHMMNovo(min) {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+async function carregarHorariosNovoAgendamento() {
+  const selectHora =
+    document.getElementById("novoHora");
+
+  const profissionalId =
+    document.getElementById("novoProfissional")?.value;
+
+  const servicoId =
+    document.getElementById("novoServico")?.value;
+
+  const data =
+    document.getElementById("novoData")?.value;
+
+  if (!selectHora) return;
+
+  selectHora.innerHTML = `
+    <option value="">
+      Selecione um horário
+    </option>
+  `;
+
+  if (!profissionalId || !servicoId || !data) return;
+
+  const profissional =
+    profissionaisCache.find(
+      p => p.id === profissionalId
+    );
+
+  const servico =
+    servicosCache.find(
+      s => s.id === servicoId
+    );
+
+  if (!profissional || !servico) return;
+
+  const inicio =
+    profissional.inicioExpediente || "08:30";
+
+  const fim =
+    profissional.fimExpediente || "18:00";
+
+  const inicioMin =
+    hhmmToMin(inicio);
+
+  const fimMin =
+    hhmmToMin(fim);
+
+  const duracaoServico =
+    Number(servico.tempoMin || 30);
+
+  const step =
+    30;
+
+  const ocupados =
+    agendaGeralCache.filter(item =>
+      item.data === data &&
+      item.colecao === profissional.colecao &&
+      item.status !== "cancelado"
+    );
+
+  const horariosLivres = [];
+
+  for (
+    let atual = inicioMin;
+    atual + duracaoServico <= fimMin;
+    atual += step
+  ) {
+    const inicioNovo =
+      atual;
+
+    const fimNovo =
+      atual + duracaoServico;
+
+    const temConflito =
+      ocupados.some(item => {
+        const inicioExistente =
+          hhmmToMin(item.hora);
+
+        const duracaoExistente =
+          Number(
+            item.servicoTempoMin ||
+            item.tempoMin ||
+            30
+          );
+
+        const fimExistente =
+          inicioExistente + duracaoExistente;
+
+        return (
+          inicioNovo < fimExistente &&
+          inicioExistente < fimNovo
+        );
+      });
+
+    if (!temConflito) {
+      horariosLivres.push(
+        minToHHMMNovo(atual)
+      );
+    }
+  }
+
+  selectHora.innerHTML = `
+    <option value="">
+      Selecione um horário
+    </option>
+
+    ${horariosLivres.map(hora => `
+      <option value="${hora}">
+        ${hora}
+      </option>
+    `).join("")}
+  `;
 }
 
 lista?.addEventListener("click", async (event) => {
@@ -478,6 +701,10 @@ async function carregarServicos() {
 
   const servicos =
     await buscarServicos();
+
+  servicosCache = servicos;
+
+  preencherSelectServicosNovoAtendimento();
 
   if (!servicos.length) {
 
@@ -780,6 +1007,18 @@ function renderizarAgendaGeral(lista) {
 
   }
 
+  lista.sort((a, b) => {
+
+    const dataA =
+      `${a.data || a.dataBR || ""} ${a.hora || ""}`;
+
+    const dataB =
+      `${b.data || b.dataBR || ""} ${b.hora || ""}`;
+
+    return dataB.localeCompare(dataA);
+
+  });
+
   // =========================
   // AGRUPAR POR DATA
   // =========================
@@ -788,7 +1027,10 @@ function renderizarAgendaGeral(lista) {
 
   lista.forEach(item => {
 
-    if (!item.data) {
+    if (
+      !item.data &&
+      !item.dataBR
+    ) {
 
       console.error(
         "ITEM SEM DATA:",
@@ -796,8 +1038,11 @@ function renderizarAgendaGeral(lista) {
       );
 
     }
+
     const data =
-      item.data || "Sem data";
+      item.data ||
+      item.dataBR ||
+      "Sem data";
 
     if (!grupos[data]) {
 
@@ -816,6 +1061,14 @@ function renderizarAgendaGeral(lista) {
   agendaGeralLista.innerHTML =
 
     Object.entries(grupos)
+      .sort(([dataA], [dataB]) => {
+
+        const a = new Date(dataA);
+        const b = new Date(dataB);
+
+        return b - a;
+
+      })
       .map(([data, itens]) => {
 
         return `
@@ -876,6 +1129,15 @@ function renderizarAgendaGeral(lista) {
 
                     </strong>
 
+                    ${item.tipo === "encaixe"
+            ? `
+                        <div class="badge-encaixe">
+                          ⚡ ENCAIXE
+                        </div>
+                      `
+            : ""
+          }
+
                     <span>
 
                       ${item.servicoNome || item.servico || "Serviço"}
@@ -884,19 +1146,9 @@ function renderizarAgendaGeral(lista) {
 
                     <small>
 
-                     👤 ${item.profissionalNome || item.profissional || "Profissional"}
-
-                    </small>
-
-                    <small>
-
-                      📅 ${formatarDataBrasil(item.data)}
-
-                    </small>
-
-                    <small>
-
-                      💰 R$ ${Number(item.servicoValor || item.valor || 0).toFixed(2)}
+                    📅 ${formatarDataBrasil(
+            item.data || item.dataBR
+          )}
 
                     </small>
 
@@ -1106,8 +1358,8 @@ async function carregarAgendaGeral() {
       `${b.data} ${b.hora} `;
 
     return (
-      new Date(dataB) -
-      new Date(dataA)
+      new Date(dataA) -
+      new Date(dataB)
     );
 
   });
@@ -1427,7 +1679,7 @@ async function carregarDashboard() {
 
 `).join("")
 
-}
+    }
 
 </div>
       `;
@@ -1489,6 +1741,9 @@ async function carregarDashboard() {
       );
 
     });
+
+  await carregarAgendaGeral();
+
 }
 
 function montarGraficoFaturamento(agendamentos) {
@@ -1653,12 +1908,30 @@ function formatarDataBrasil(data) {
 
   if (!data) return "--/--/----";
 
-  const d =
-    new Date(data + "T00:00:00");
+  // já está em BR
+  if (data.includes("/")) {
 
-  return d.toLocaleDateString(
-    "pt-BR"
-  );
+    const partes = data.split("/");
+
+    if (partes.length === 3) {
+      return data;
+    }
+
+  }
+
+  // formato ISO
+  if (data.includes("-")) {
+
+    const d =
+      new Date(data + "T00:00:00");
+
+    return d.toLocaleDateString(
+      "pt-BR"
+    );
+
+  }
+
+  return "--/--/----";
 
 }
 
@@ -1666,45 +1939,35 @@ function formatarTituloDataAgenda(data) {
 
   if (!data) return "Sem data";
 
-  const hoje =
-    new Date();
+  let dataObj;
 
-  const amanha =
-    new Date();
+  if (data.includes("/")) {
 
-  amanha.setDate(
-    amanha.getDate() + 1
-  );
+    const [dia, mes, ano] =
+      data.split("/").map(Number);
 
-  const dataHoje =
-    hoje.toISOString().slice(0, 10);
+    dataObj =
+      new Date(
+        ano,
+        mes - 1,
+        dia
+      );
 
-  const dataAmanha =
-    amanha.toISOString().slice(0, 10);
+  } else {
 
-  if (data === dataHoje) {
-
-    return "HOJE";
-
-  }
-
-  if (data === dataAmanha) {
-
-    return "AMANHÃ";
+    dataObj =
+      new Date(data + "T00:00:00");
 
   }
 
-  const d =
-    new Date(data + "T00:00:00");
-
-  return d.toLocaleDateString(
+  return dataObj.toLocaleDateString(
     "pt-BR",
     {
       weekday: "long",
       day: "2-digit",
       month: "2-digit"
     }
-  );
+  ).toUpperCase();
 
 }
 
@@ -1874,10 +2137,10 @@ if (btnToggleAgendaGeral && agendaGeral) {
         "agenda-geral-fechada"
       );
 
-    btnToggleAgendaGeral.textContent =
+    btnToggleAgendaGeral.innerHTML =
       estaFechada
-        ? "Abrir agenda"
-        : "Fechar agenda";
+        ? "▼ Abrir agenda"
+        : "▲ Fechar agenda";
 
   });
 
@@ -2786,7 +3049,7 @@ document.addEventListener("click", (e) => {
 
   const grid =
     document.querySelector(
-     `.servicos-grid[data-categoria="${categoria}"]`
+      `.servicos-grid[data-categoria="${categoria}"]`
     );
 
   if (!grid) return;
@@ -2805,3 +3068,290 @@ document.addEventListener("click", (e) => {
       );
 
 });
+
+const btnNovoAgendamento =
+  document.getElementById(
+    "btn-novo-agendamento"
+  );
+
+const btnNovoEncaixe =
+  document.getElementById(
+    "btn-novo-encaixe"
+  );
+
+const modalNovoAtendimento =
+  document.getElementById(
+    "modal-novo-atendimento"
+  );
+
+const btnFecharNovoAtendimento =
+  document.getElementById(
+    "btn-fechar-novo-atendimento"
+  );
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    const botao =
+      e.target.closest(
+        "#btn-novo-agendamento"
+      );
+
+    if (!botao) return;
+
+    modalNovoAtendimento?.classList.remove(
+      "hidden"
+    );
+
+  }
+);
+
+const campoHoraNormal =
+  document.getElementById(
+    "novoHora"
+  );
+
+const campoHoraEncaixe =
+  document.getElementById(
+    "novoHoraEncaixe"
+  );
+
+btnNovoAgendamento?.addEventListener(
+  "click",
+  () => {
+
+    document.getElementById(
+      "titulo-novo-atendimento"
+    ).textContent =
+      "📅 Novo Agendamento";
+
+    campoHoraNormal.style.display =
+      "block";
+
+    campoHoraEncaixe.style.display =
+      "none";
+
+    campoHoraNormal.required = true;
+
+    campoHoraEncaixe.required = false;
+
+    document.getElementById("novoHora").innerHTML = `
+      <option value="">
+        Selecione um horário
+      </option>
+    `;
+
+    modalNovoAtendimento?.classList.remove(
+      "hidden"
+    );
+
+    modalNovoAtendimento.style.display =
+      "flex";
+  }
+);
+
+btnNovoEncaixe?.addEventListener(
+  "click",
+  () => {
+
+    document.getElementById(
+      "titulo-novo-atendimento"
+    ).textContent =
+      "⚡ Novo Encaixe";
+
+    campoHoraNormal.style.display =
+      "none";
+
+    campoHoraEncaixe.style.display =
+      "block";
+
+    campoHoraNormal.required = false;
+
+    campoHoraEncaixe.required = true;
+
+    modalNovoAtendimento?.classList.remove(
+      "hidden"
+    );
+
+    modalNovoAtendimento.style.display =
+      "flex";
+  }
+);
+
+btnFecharNovoAtendimento?.addEventListener(
+  "click",
+  () => {
+    modalNovoAtendimento?.classList.add("hidden");
+    modalNovoAtendimento.style.display = "none";
+  }
+);
+
+const formNovoAtendimento =
+  document.getElementById(
+    "form-novo-atendimento"
+  );
+
+formNovoAtendimento?.addEventListener(
+  "submit",
+  async (e) => {
+
+    e.preventDefault();
+
+    const nome =
+      document.getElementById("novoNome").value.trim();
+
+    const sobrenome =
+      document.getElementById("novoSobrenome").value.trim();
+
+    const telefone =
+      document.getElementById("novoTelefone").value.trim();
+
+    const profissionalId =
+      document.getElementById("novoProfissional").value;
+
+    const servicoId =
+      document.getElementById("novoServico").value;
+
+    const data =
+      document.getElementById("novoData").value;
+
+    const tituloModal =
+      document.getElementById(
+        "titulo-novo-atendimento"
+      ).textContent;
+
+    const hora =
+
+      tituloModal.includes("Encaixe")
+
+        ? document.getElementById(
+          "novoHoraEncaixe"
+        ).value.trim()
+
+        : document.getElementById(
+          "novoHora"
+        ).value;
+
+    if (!hora) {
+
+      mostrarToast(
+        "Informe um horário",
+        "error"
+      );
+
+      return;
+
+    }
+
+    const profissional =
+      profissionaisCache.find(
+        p => p.id === profissionalId
+      );
+
+    const servico =
+      servicosCache.find(
+        s => s.id === servicoId
+      );
+
+    const dataBR =
+
+      data.split("-").reverse().join("/");
+
+    console.log(
+      "DATA:",
+      data,
+      "DATA BR:",
+      dataBR
+    );
+
+    const tipoAtendimento =
+
+      tituloModal.includes("Encaixe")
+
+        ? "encaixe"
+
+        : "agendamento";
+
+    await addDoc(
+
+      collection(
+        db,
+        profissional.colecao
+      ),
+
+      {
+
+        clienteNome:
+          `${nome} ${sobrenome}`,
+
+        telefone,
+
+        profissionalId:
+          profissional.id,
+
+        profissionalNome:
+          profissional.nome,
+
+        servicoId:
+          servico.id,
+
+        servicoNome:
+          servico.nome,
+
+        servicoValor:
+          servico.valor,
+
+        servicoTempoMin:
+          servico.tempoMin,
+
+        data:
+          data,
+
+        dataBR:
+          dataBR,
+
+        hora,
+
+        status:
+          "confirmado",
+
+        tipo:
+          tipoAtendimento,
+
+        origem:
+          "admin",
+
+        criadoEm:
+          new Date().toISOString()
+
+      }
+
+    );
+
+    mostrarToast(
+      "Atendimento criado com sucesso"
+    );
+
+    formNovoAtendimento.reset();
+
+    modalNovoAtendimento.classList.add(
+      "hidden"
+    );
+
+    modalNovoAtendimento.style.display =
+      "none";
+
+    console.log(
+      "ATUALIZANDO DASHBOARD"
+    );
+
+    await carregarDashboard();
+
+    console.log(
+      "ATUALIZANDO AGENDA GERAL"
+    );
+
+    await carregarAgendaGeral();
+  }
+);

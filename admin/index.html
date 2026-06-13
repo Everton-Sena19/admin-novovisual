@@ -155,6 +155,14 @@
 
               </button>
 
+              <button id="btn-novo-agendamento" type="button" class="btn-novo-atendimento">
+                📅 Novo Agendamento
+              </button>
+
+              <button id="btn-novo-encaixe" type="button" class="btn-novo-atendimento">
+                ⚡ Novo Encaixe
+              </button>
+
             </div>
 
             <div class="agenda-geral-filtros">
@@ -488,6 +496,78 @@
         </button>
 
       </div>
+
+    </div>
+
+  </div>
+
+  <div id="modal-novo-atendimento" class="modal-confirmacao hidden">
+
+    <div class="modal-box">
+
+      <h3 id="titulo-novo-atendimento">
+
+        📅 Novo Agendamento
+
+      </h3>
+
+      <form id="form-novo-atendimento">
+
+        <input type="text" id="novoNome" placeholder="Nome" required>
+
+        <input type="text" id="novoSobrenome" placeholder="Sobrenome" required>
+
+        <input type="text" id="novoTelefone" placeholder="Telefone" required>
+
+        <select id="novoProfissional" required>
+
+          <option value="">
+
+            Selecione o profissional
+
+          </option>
+
+        </select>
+
+        <select id="novoServico" required>
+
+          <option value="">
+
+            Selecione o serviço
+
+          </option>
+
+        </select>
+
+        <input type="date" id="novoData" required>
+
+        <select id="novoHora" required>
+
+          <option value="">
+            Selecione um horário
+          </option>
+
+        </select>
+
+        <input type="time" id="novoHoraEncaixe" placeholder="Horário do encaixe (hh:mm)" style="display:none" />
+
+        <div class="modal-acoes">
+
+          <button type="button" id="btn-fechar-novo-atendimento">
+
+            Cancelar
+
+          </button>
+
+          <button type="submit">
+
+            Salvar
+
+          </button>
+
+        </div>
+
+      </form>
 
     </div>
 

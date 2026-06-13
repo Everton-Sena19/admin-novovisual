@@ -6,6 +6,42 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+function normalizarData(data) {
+
+  if (!data) return "";
+
+  // Já está correta
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    return data;
+  }
+
+  // 17/06/2026
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+
+    const [dia, mes, ano] =
+      data.split("/");
+
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  // 17062026
+  if (/^\d{8}$/.test(data)) {
+
+    const dia =
+      data.slice(0, 2);
+
+    const mes =
+      data.slice(2, 4);
+
+    const ano =
+      data.slice(4, 8);
+
+    return `${ano}-${mes}-${dia}`;
+  }
+
+  return data;
+}
+
 function hojeISO() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -17,8 +53,6 @@ function primeiroDiaMesISO() {
 
 export async function buscarAgendamentosPorProfissionais(profissionais) {
 
-  const hoje = hojeISO();
-  const inicioMes = primeiroDiaMesISO();
   const agendamentos = [];
 
   for (const prof of profissionais) {
@@ -33,148 +67,171 @@ export async function buscarAgendamentosPorProfissionais(profissionais) {
 
     snap.forEach(documento => {
 
+      const dados =
+        documento.data();
+
       agendamentos.push({
-        id: documento.id,
-        colecao: prof?.colecao,
-        profissional: prof.nome,
-        ...documento.data()
+
+        id:
+          documento.id,
+
+        colecao:
+          prof.colecao,
+
+        profissional:
+          prof.nome,
+
+        ...dados,
+
+        data:
+          normalizarData(
+            dados.data ||
+            dados.dataBR
+          )
+
       });
 
     });
 
   }
 
-    return agendamentos.sort((a, b) => {
-      return `${a.data || ""} ${a.hora || ""}`.localeCompare(`${b.data || ""} ${b.hora || ""}`);
-    });
-  }
+  return agendamentos.sort((a, b) => {
 
-  export function montarResumoDashboard(
-    agendamentos,
-    profissionais,
-    perfilLogado = null
+    return `${b.data || ""} ${b.hora || ""}`
+      .localeCompare(
+        `${a.data || ""} ${a.hora || ""}`
+      );
+
+  });
+
+}
+
+export function montarResumoDashboard(
+  agendamentos,
+  profissionais,
+  perfilLogado = null
+) {
+
+  const hoje = hojeISO();
+
+  const agendamentosHoje =
+    agendamentos.filter(
+      a => a.data === hoje
+    );
+
+  // =========================
+  // FILTRO FINANCEIRO
+  // =========================
+
+  let agendamentosFinanceiros =
+    agendamentos;
+
+  let agendamentosHojeFinanceiros =
+    agendamentosHoje;
+
+  if (
+    perfilLogado?.tipoAcesso ===
+    "profissional_admin"
   ) {
 
-    const hoje = hojeISO();
-
-    const agendamentosHoje =
+    agendamentosFinanceiros =
       agendamentos.filter(
-        a => a.data === hoje
+        item =>
+          item.profissionalNome ===
+          perfilLogado.nome
       );
 
-    // =========================
-    // FILTRO FINANCEIRO
-    // =========================
-
-    let agendamentosFinanceiros =
-      agendamentos;
-
-    let agendamentosHojeFinanceiros =
-      agendamentosHoje;
-
-    if (
-      perfilLogado?.tipoAcesso ===
-      "profissional_admin"
-    ) {
-
-      agendamentosFinanceiros =
-        agendamentos.filter(
-          item =>
-            item.profissionalNome ===
-            perfilLogado.nome
-        );
-
-      agendamentosHojeFinanceiros =
-        agendamentosHoje.filter(
-          item =>
-            item.profissionalNome ===
-            perfilLogado.nome
-        );
-
-    }
-
-    // =========================
-    // FATURAMENTO
-    // =========================
-
-    const faturamentoHoje =
-      agendamentosHojeFinanceiros.reduce(
-        (total, item) => {
-
-          return total + Number(
-            item.servicoValor ||
-            item.valor ||
-            0
-          );
-
-        }, 0
+    agendamentosHojeFinanceiros =
+      agendamentosHoje.filter(
+        item =>
+          item.profissionalNome ===
+          perfilLogado.nome
       );
 
-    const faturamentoMes =
-      agendamentosFinanceiros.reduce(
-        (total, item) => {
+  }
 
-          return total + Number(
-            item.servicoValor ||
-            item.valor ||
-            0
-          );
+  // =========================
+  // FATURAMENTO
+  // =========================
 
-        }, 0
-      );
+  const faturamentoHoje =
+    agendamentosHojeFinanceiros.reduce(
+      (total, item) => {
 
-    // =========================
-    // POR PROFISSIONAL
-    // =========================
-
-    const porProfissional = {};
-
-    agendamentos.forEach(item => {
-
-      const nome =
-        item.profissional ||
-        item.profissionalNome ||
-        "Não informado";
-
-      if (!porProfissional[nome]) {
-
-        porProfissional[nome] = {
-          profissional: nome,
-          quantidade: 0,
-          faturamento: 0
-        };
-
-      }
-
-      porProfissional[nome].quantidade += 1;
-
-      porProfissional[nome].faturamento +=
-        Number(
+        return total + Number(
           item.servicoValor ||
           item.valor ||
           0
         );
 
-    });
+      }, 0
+    );
 
-    return {
+  const faturamentoMes =
+    agendamentosFinanceiros.reduce(
+      (total, item) => {
 
-      totalHoje: agendamentosHoje.length,
+        return total + Number(
+          item.servicoValor ||
+          item.valor ||
+          0
+        );
 
-      totalMes: agendamentos.length,
+      }, 0
+    );
 
-      faturamentoHoje,
+  // =========================
+  // POR PROFISSIONAL
+  // =========================
 
-      faturamentoMes,
+  const porProfissional = {};
 
-      profissionaisAtivos:
-        profissionais.filter(
-          p => p && p.ativo !== false
-        ).length,
+  agendamentos.forEach(item => {
 
-      porProfissional:
-        Object.values(porProfissional)
+    const nome =
+      item.profissional ||
+      item.profissionalNome ||
+      "Não informado";
 
-    };
+    if (!porProfissional[nome]) {
 
-  }
+      porProfissional[nome] = {
+        profissional: nome,
+        quantidade: 0,
+        faturamento: 0
+      };
+
+    }
+
+    porProfissional[nome].quantidade += 1;
+
+    porProfissional[nome].faturamento +=
+      Number(
+        item.servicoValor ||
+        item.valor ||
+        0
+      );
+
+  });
+
+  return {
+
+    totalHoje: agendamentosHoje.length,
+
+    totalMes: agendamentos.length,
+
+    faturamentoHoje,
+
+    faturamentoMes,
+
+    profissionaisAtivos:
+      profissionais.filter(
+        p => p && p.ativo !== false
+      ).length,
+
+    porProfissional:
+      Object.values(porProfissional)
+
+  };
+
+}
