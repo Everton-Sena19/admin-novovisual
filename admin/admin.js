@@ -57,6 +57,9 @@ const toast = document.getElementById("toast");
 
 const modalConfirmacao = document.getElementById("modal-confirmacao");
 const modalMensagem = document.getElementById("modal-mensagem");
+
+const modalTitulo = document.getElementById("modal-titulo");
+
 const btnCancelarModal = document.getElementById("btn-cancelar-modal");
 const btnConfirmarModal = document.getElementById("btn-confirmar-modal");
 
@@ -125,16 +128,25 @@ function mostrarToast(
 }
 
 function abrirModalConfirmacao({
+  titulo = "Confirmar ação",
   mensagem,
+  textoBotao = "Confirmar",
   onConfirmar: callback
 }) {
 
   if (!modalConfirmacao) return;
 
+  modalTitulo.textContent =
+    titulo;
+
   modalMensagem.textContent =
     mensagem;
 
-  onConfirmar = callback;
+  btnConfirmarModal.textContent =
+    textoBotao;
+
+  onConfirmar =
+    callback;
 
   modalConfirmacao.classList.add(
     "show"
@@ -358,34 +370,106 @@ function preencherSelectNovoAtendimento() {
 }
 
 document.addEventListener(
-  "change",
-  async (e) => {
+  "pointerdown",
+  (e) => {
 
-    if (
-      e.target.id ===
-      "novoProfissional"
-    ) {
+    const campo = e.target;
 
-      preencherSelectServicosNovoAtendimento(
-        e.target.value
-      );
+    const idsModal = [
+      "novoNome",
+      "novoSobrenome",
+      "novoTelefone",
+      "novoProfissional",
+      "novoServico",
+      "novoData",
+      "novoHora",
+      "novoHoraEncaixe"
+    ];
 
-      document.getElementById("novoHora").innerHTML = `
-        <option value="">
-          Selecione um horário
-        </option>
-      `;
+    if (!idsModal.includes(campo.id)) {
+      return;
+    }
 
+    const nome = document.getElementById("novoNome")?.value.trim();
+    const sobrenome = document.getElementById("novoSobrenome")?.value.trim();
+    const telefone = document.getElementById("novoTelefone")?.value.trim();
+    const profissional = document.getElementById("novoProfissional")?.value;
+    const servico = document.getElementById("novoServico")?.value;
+    const data = document.getElementById("novoData")?.value;
+
+    if (campo.id !== "novoNome" && !nome) {
+      e.preventDefault();
+      mostrarToast("Informe o nome do cliente", "error");
+      document.getElementById("novoNome")?.focus();
       return;
     }
 
     if (
-      e.target.id === "novoServico" ||
-      e.target.id === "novoData"
+      !["novoNome", "novoSobrenome"].includes(campo.id) &&
+      !sobrenome
     ) {
+      e.preventDefault();
+      mostrarToast("Informe o sobrenome do cliente", "error");
+      document.getElementById("novoSobrenome")?.focus();
+      return;
+    }
 
-      await carregarHorariosNovoAgendamento();
+    if (
+      !["novoNome", "novoSobrenome", "novoTelefone"].includes(campo.id) &&
+      !telefone
+    ) {
+      e.preventDefault();
+      mostrarToast("Informe o telefone do cliente", "error");
+      document.getElementById("novoTelefone")?.focus();
+      return;
+    }
 
+    if (
+      ![
+        "novoNome",
+        "novoSobrenome",
+        "novoTelefone",
+        "novoProfissional"
+      ].includes(campo.id) &&
+      !profissional
+    ) {
+      e.preventDefault();
+      mostrarToast("Selecione um profissional primeiro", "error");
+      document.getElementById("novoProfissional")?.focus();
+      return;
+    }
+
+    if (
+      ![
+        "novoNome",
+        "novoSobrenome",
+        "novoTelefone",
+        "novoProfissional",
+        "novoServico"
+      ].includes(campo.id) &&
+      !servico
+    ) {
+      e.preventDefault();
+      mostrarToast("Selecione um serviço primeiro", "error");
+      document.getElementById("novoServico")?.focus();
+      return;
+    }
+
+    if (
+      ![
+        "novoNome",
+        "novoSobrenome",
+        "novoTelefone",
+        "novoProfissional",
+        "novoServico",
+        "novoData"
+      ].includes(campo.id) &&
+      !data
+    ) {
+      e.preventDefault();
+      mostrarToast("Selecione uma data primeiro", "error");
+      document.getElementById("novoData")?.focus();
+      return;
     }
 
   }
@@ -447,6 +531,14 @@ async function carregarHorariosNovoAgendamento() {
 
   const data =
     document.getElementById("novoData")?.value;
+
+  if (
+    !profissionalId ||
+    !servicoId ||
+    !data
+  ) {
+    return;
+  }
 
   if (!selectHora) return;
 
@@ -1085,11 +1177,14 @@ function renderizarAgendaGeral(lista) {
 
               ${itens.map(item => `
 
-                <div class="agenda-geral-card
-                  ${item.status || "confirmado"}
-                  ${item.proximo ? "proximo" : ""}
-                  ${item.atrasado ? "atrasado" : ""}
-                ">
+                  <div
+                    data-agendamento-id="${item.id}"
+                    class="agenda-geral-card
+                      ${item.status || "confirmado"}
+                      ${item.proximo ? "proximo" : ""}
+                      ${item.atrasado ? "atrasado" : ""}
+                    "
+                  >
 
                   <div class="agenda-geral-card-topo">
 
@@ -1274,6 +1369,18 @@ async function carregarAgendaGeral() {
       profissionais
     );
 
+  console.log(
+    "TODAS AS DATAS:",
+    [...new Set(
+      agendamentos.map(a => a.data)
+    )]
+  );
+
+  console.log(
+    "TODOS AGENDAMENTOS:",
+    agendamentos
+  );
+
   agendaGeralCache =
     [...agendamentos];
 
@@ -1390,23 +1497,170 @@ async function carregarDashboard() {
   const agendamentos =
     await buscarAgendamentosPorProfissionais(profissionais);
 
-  const agendaHoje = agendamentos.filter(
-    item => item.data === new Date()
-      .toISOString()
-      .slice(0, 10));
+  agendamentos.forEach(item => {
+
+    item.status =
+      String(
+        item.status || "confirmado"
+      ).toLowerCase();
+
+  });
+
+  const hoje = new Date();
+
+  const hojeLocal =
+
+    `${hoje.getFullYear()}-${String(hoje.getMonth() + 1)
+      .padStart(2, "0")
+    }-${String(hoje.getDate())
+      .padStart(2, "0")
+    }`;
+
+  const agendaHoje =
+
+    agendamentos.filter(
+      item => item.data === hojeLocal
+    );
+
+  console.log(
+    "HOJE LOCAL:",
+    hojeLocal
+  );
 
   const agendaConcluidos =
-    agendaHoje.filter(
-      item =>
-        item.status ===
-        "finalizado"
+
+    agendaHoje.filter(item =>
+
+      item.status === "finalizado"
+
     );
+
+  console.log(
+    "AGENDA HOJE:",
+    agendaHoje
+  );
+
+  console.log(
+    "STATUS AGENDA HOJE:",
+    agendaHoje.map(item => ({
+      hora: item.hora,
+      status: item.status,
+      data: item.data
+    }))
+  );
+
+  const agoraPendencias = new Date();
+
+  const agendaPendentesFinalizacao =
+
+    agendamentos.filter(item => {
+
+      if (
+        item.status === "finalizado" ||
+        item.status === "cancelado"
+      ) {
+        return false;
+      }
+
+      const dataHoraInicio =
+        new Date(
+          `${item.data}T${item.hora || "00:00"}`
+        );
+
+      const dataHoraFim =
+        new Date(
+          dataHoraInicio.getTime() +
+          (
+            Number(item.servicoTempoMin || 0)
+            * 60000
+          )
+        );
+
+      return agoraPendencias > dataHoraFim;
+
+    });
+
+  console.log(
+    "STATUS AGORA:",
+    agendaHoje.map(item => ({
+      hora: item.hora,
+      status: item.status,
+      servico: item.servicoNome
+    }))
+  );
+
+  agendaPendentesFinalizacao.forEach(p => {
+
+    const encontrado =
+      agendaHoje.find(
+        item => item.id === p.id
+      );
+
+    if (encontrado) {
+
+      encontrado.pendenteFinalizacao = true;
+
+    }
+
+  });
+
+  const primeiraPendencia =
+    agendaPendentesFinalizacao[0];
+
+  const maisAntigaPendencia =
+    agendaPendentesFinalizacao
+      .sort(
+        (a, b) =>
+          new Date(`${a.data}T${a.hora}`) -
+          new Date(`${b.data}T${b.hora}`)
+      )[0];
+
+      console.log(
+        "MAIS ANTIGA:",
+        maisAntigaPendencia
+      );
+
+  const diasEmAberto =
+    maisAntigaPendencia
+
+      ? Math.floor(
+
+          (
+            new Date() -
+            new Date(
+              `${maisAntigaPendencia.data}T${maisAntigaPendencia.hora}`
+            )
+          ) /
+
+          (1000 * 60 * 60 * 24)
+
+        )
+
+      : 0;
+
+  const totalPendentesFinalizacao =
+    agendaPendentesFinalizacao.length;
+
+  const dashboardAlertas =
+    document.getElementById(
+      "dashboard-alertas"
+    );
+
+  const alertaPendenciasFixo =
+    document.getElementById(
+      "alerta-pendencias-fixo"
+    );
+
+  console.log(
+    "DASHBOARD ALERTAS:",
+    dashboardAlertas
+  );
 
   const agora = new Date();
 
   const horaAtual =
-    agora.getHours() * 60 +
-    agora.getMinutes();
+    agoraPendencias.getHours() * 60 +
+    agoraPendencias.getMinutes();
 
   const agendaOrdenada =
     [...agendaHoje]
@@ -1531,68 +1785,215 @@ async function carregarDashboard() {
 
     `;
 
+  if (alertaPendenciasFixo) {
+
+    console.log(
+      "ENTROU NO ALERTA"
+    );
+
+    console.log(
+      "TOTAL PENDENTES:",
+      totalPendentesFinalizacao
+    );
+
+   alertaPendenciasFixo.innerHTML =
+
+  totalPendentesFinalizacao
+
+    ? `
+
+      <div class="alerta-operacional">
+
+        <div class="alerta-header">
+
+          <div class="alerta-header-icon">
+            ⚠
+          </div>
+
+          <div class="alerta-header-info">
+
+            <strong>
+              Pendências Operacional
+            </strong>
+
+            <span>
+              ${totalPendentesFinalizacao}
+              pendência(s) aguardando baixa
+            </span>
+
+            <small class="alerta-urgencia">
+              Atualize Sua Agenda
+            </small>
+
+          </div>
+
+        </div>
+
+        <div class="alerta-primeira-pendencia">
+
+          <small>Cliente</small>
+
+          <strong>
+            ${maisAntigaPendencia?.clienteNome || "Cliente"}
+          </strong>
+
+          <small>Serviço</small>
+
+          <strong>
+            ${maisAntigaPendencia?.servicoNome || ""}
+          </strong>
+
+          <small>Em aberto desde</small>
+
+          <strong>
+            ${maisAntigaPendencia?.dataBR ||
+              maisAntigaPendencia?.data ||
+              ""}
+          </strong>
+
+          <strong>
+            ${maisAntigaPendencia?.hora || "--:--"}
+          </strong>
+
+          <small class="alerta-atraso">
+            🔴 Há ${diasEmAberto} dia(s)
+          </small>
+
+          <span class="alerta-operacao-desatualizada">
+            A operação está desatualizada
+          </span>
+
+          <div class="contador-pendencias">
+
+            <small>
+              Pendências em aberto
+            </small>
+
+            <strong>
+              ${totalPendentesFinalizacao}
+            </strong>
+
+          </div>
+
+        </div>
+
+        <button
+          id="btn-resolver-pendencia"
+          class="btn-resolver-pendencia"
+          data-id="${maisAntigaPendencia?.id}"
+          data-colecao="${maisAntigaPendencia?.colecao}"
+        >
+
+          Dar Baixa no Atendimento
+
+        </button>
+
+      </div>
+
+    `
+
+    : "";
+
+    alertaPendenciasFixo.style.display =
+      "block";
+
+
+
+    alertaPendenciasFixo.style.display =
+      totalPendentesFinalizacao
+        ? "block"
+        : "none";
+
+  }
+
   if (!agendamentos.length) {
 
     montarGraficoFaturamento([]);
 
+    agendaOperacionalLista.innerHTML = `
+      <div class="agenda-geral-vazia">
+        Nenhum atendimento hoje
+      </div>
+    `;
+
+    agendaConcluidosLista.innerHTML = `
+      <div class="agenda-geral-vazia">
+        Nenhum atendimento finalizado hoje
+      </div>
+    `;
+
     return;
+
   }
 
   montarGraficoFaturamento(agendamentos);
 
-  agendaOperacionalLista.innerHTML = `
+  const agendaOperacional =
 
-      <div class="agenda-operacional-grid">
+    agendaOrdenada.filter(item =>
 
-        ${agendaOrdenada
-      .filter(item =>
-        item.status !==
-        "finalizado"
-      )
-      .map(item => `
+      item.status !== "finalizado"
 
-  <div class="agenda-operacional-card
-  ${item.status || "confirmado"}
-  ${item.proximo ? "proximo" : ""}
-  ${item.atrasado ? "atrasado" : ""}">
+    );
 
-    <div class="agenda-operacional-hora">
+  console.log(
+    "PENDENTES FINALIZACAO:",
+    agendaPendentesFinalizacao
+  );
 
-      ${item.hora || "--:--"}
+  agendaOperacionalLista.innerHTML =
 
+    agendaOperacional.length
+
+      ? `
+
+<div class="agenda-geral-grid">
+
+${agendaOperacional
+
+        .map(item => `
+
+<div
+  data-agendamento-id="${item.id}"
+  class="
+    agenda-geral-card
+    ${item.status || "confirmado"}
+    ${item.pendenteFinalizacao ? "pendente-finalizacao" : ""}
+  "
+>
+
+  <div class="agenda-geral-card-topo">
+
+    <div class="agenda-geral-hora">
+      ${item.hora}
     </div>
 
-    <div class="agenda-operacional-info">
+    <div class="agenda-geral-status ${item.status}">
+      ${formatarStatusAgenda(item.status)}
+    </div>
+
+  </div>
+
+    <div class="agenda-geral-info">
 
       <strong>
-        ${item.clienteNomeCompleto || "Cliente"}
+        ${item.clienteNome}
       </strong>
 
       <span>
-        ${item.servicoNome || "Serviço"}
+        ${item.servicoNome}
       </span>
 
       <small>
-        ${item.profissionalNome || "Profissional"}
+        ${item.profissionalNome}
       </small>
 
-    </div>
+    <div class="agenda-geral-acoes">
 
-    <div class="agenda-status ${item.status || "confirmado"}">
-
-      ${formatarStatusAgenda(
-        item.status
-      )}
-
-    </div>
-
-    <div class="agenda-acoes">
+      ${item.status === "confirmado" ? `
 
       <button
-        class="btn-status atendimento
-        ${item.status === "atendimento"
-          ? "ativo"
-          : ""}"
+        class="btn-status atendimento btn-agenda-dia-status"
         data-id="${item.id}"
         data-colecao="${item.colecao}"
         data-status="atendimento"
@@ -1601,10 +2002,20 @@ async function carregarDashboard() {
       </button>
 
       <button
-        class="btn-status finalizado
-        ${item.status === "finalizado"
-          ? "ativo"
-          : ""}"
+        class="btn-status cancelado btn-agenda-dia-status"
+        data-id="${item.id}"
+        data-colecao="${item.colecao}"
+        data-status="cancelado"
+      >
+        Cancelar
+      </button>
+
+      ` : ""}
+
+      ${item.status === "atendimento" ? `
+
+      <button
+        class="btn-status finalizado btn-agenda-dia-status"
         data-id="${item.id}"
         data-colecao="${item.colecao}"
         data-status="finalizado"
@@ -1613,10 +2024,7 @@ async function carregarDashboard() {
       </button>
 
       <button
-        class="btn-status cancelado
-        ${item.status === "cancelado"
-          ? "ativo"
-          : ""}"
+        class="btn-status cancelado btn-agenda-dia-status"
         data-id="${item.id}"
         data-colecao="${item.colecao}"
         data-status="cancelado"
@@ -1624,15 +2032,45 @@ async function carregarDashboard() {
         Cancelar
       </button>
 
-    </div>
+      ` : ""}
+
+      ${item.status === "cancelado" ? `
+
+      <span class="status-info">
+        Atendimento cancelado
+      </span>
+
+      ` : ""}
+
+      ${item.status === "finalizado" ? `
+
+      <span class="status-info">
+        Atendimento finalizado
+      </span>
+
+      ` : ""}
+
+    </div> 
 
   </div>
 
-`).join("")
-    }
+</div>
+
+`).join("")}
 
 </div>
-      `;
+
+`
+
+      : `
+
+<div class="agenda-geral-vazia">
+
+  Nenhum atendimento operacional hoje
+
+</div>
+
+`;
 
   agendaConcluidosLista.innerHTML = `
 
@@ -1665,11 +2103,11 @@ async function carregarDashboard() {
     </div>
 
     <button
-      class="btn-status atendimento"
+       class="btn-status atendimento btn-agenda-dia-status"
       data-id="${item.id}"
       data-colecao="${item.colecao}"
       data-status="atendimento"
-    >
+     >
 
       Reabrir
 
@@ -1684,67 +2122,110 @@ async function carregarDashboard() {
 </div>
       `;
 
-  agendaOperacionalLista
-    ?.querySelectorAll(".btn-status")
-    .forEach(botao => {
+}
 
-      botao.addEventListener(
-        "click",
-        async () => {
+document.addEventListener(
+  "click",
+  async (e) => {
 
-          const item = {
-
-            id:
-              botao.dataset.id,
-
-            colecao:
-              botao.dataset.colecao
-          };
-
-          const novoStatus =
-            botao.dataset.status;
-
-          if (
-            novoStatus ===
-            "finalizado"
-          ) {
-
-            abrirModalConfirmacao({
-
-              mensagem:
-                "Deseja realmente finalizar este atendimento?",
-
-              onConfirmar: async () => {
-
-                await atualizarStatusAgendamento(
-
-                  item,
-
-                  novoStatus
-                );
-
-              }
-
-            });
-
-            return;
-          }
-
-          await atualizarStatusAgendamento(
-
-            item,
-
-            novoStatus
-          );
-
-        }
+    const botao =
+      e.target.closest(
+        ".btn-agenda-dia-status"
       );
+
+    if (!botao) return;
+
+    const id =
+      botao.dataset.id;
+
+    const colecao =
+      botao.dataset.colecao;
+
+    const novoStatus =
+      botao.dataset.status;
+
+    console.trace(
+      "[CLIQUE STATUS AGENDA DIA]",
+      {
+        id,
+        colecao,
+        novoStatus,
+        textoBotao: botao.textContent.trim(),
+        classeBotao: botao.className
+      }
+    );
+
+    if (!id || !colecao || !novoStatus) {
+
+      mostrarToast(
+        "Erro ao localizar atendimento",
+        "error"
+      );
+
+      return;
+
+    }
+
+    await atualizarStatusAgendamento(
+      id,
+      colecao,
+      novoStatus
+    );
+
+    await carregarDashboard();
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    const btn =
+      e.target.closest(
+        "#btn-resolver-pendencia"
+      );
+
+    if (!btn) return;
+
+    const id =
+      btn.dataset.id;
+
+    const colecao =
+      btn.dataset.colecao;
+
+    abrirModalConfirmacao({
+
+      titulo:
+        "Finalizar atendimento",
+
+      mensagem:
+        "Deseja finalizar esta pendência?",
+
+      textoBotao:
+        "Finalizar",
+
+      onConfirmar: async () => {
+
+        await atualizarStatusAgendamento(
+          id,
+          colecao,
+          "finalizado"
+        );
+
+        mostrarToast(
+          "Pendência resolvida com sucesso",
+          "success"
+        );
+
+        await carregarDashboard();
+
+      }
 
     });
 
-  await carregarAgendaGeral();
-
-}
+  }
+);
 
 function montarGraficoFaturamento(agendamentos) {
   const mapa = {};
@@ -1866,13 +2347,41 @@ function aplicarPermissoes() {
 
 }
 
-btnLogout?.addEventListener("click", async () => {
+btnLogout?.addEventListener(
+  "click",
+  async () => {
 
-  await signOut(auth);
+    await signOut(auth);
 
-  location.reload();
+    location.reload();
 
-});
+  }
+);
+
+document.addEventListener(
+  "click",
+  (e) => {
+
+    const btnPendencias =
+      e.target.closest(
+        "#btn-ver-pendencias"
+      );
+
+    if (!btnPendencias) return;
+
+    const primeiraPendencia =
+      document.querySelector(
+        ".pendente-finalizacao"
+      );
+
+    primeiraPendencia
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+  }
+);
 
 btnMenuMobile
   ?.addEventListener(
@@ -1977,7 +2486,7 @@ function aplicarFiltrosAgendaGeral() {
     [...agendaGeralCache];
 
   const periodo =
-    filtroPeriodoAgenda?.value || "hoje";
+    filtroPeriodoAgenda?.value || "todos";
 
   const hoje =
     new Date();
@@ -2292,7 +2801,14 @@ btnConfirmarCancelamento
 
           });
 
-        aplicarFiltrosAgendaGeral();
+        console.log(
+          "FILTRO PERIODO:",
+          filtroPeriodoAgenda?.value
+        );
+
+        filtroPeriodoAgenda.value = "todos";
+
+        await carregarAgendaGeral();
 
         mostrarToast(
           "Agendamento cancelado",
@@ -2340,6 +2856,15 @@ async function atualizarStatusAgendamento(
   colecao,
   status
 ) {
+
+  console.trace(
+    "[ATUALIZAR STATUS]",
+    {
+      id,
+      colecao,
+      status
+    }
+  );
 
   try {
 
@@ -2389,8 +2914,14 @@ async function atualizarStatusAgendamento(
     aplicarFiltrosAgendaGeral();
 
     mostrarToast(
-      "Status atualizado",
-      "sucesso"
+      status === "atendimento"
+        ? "Atendimento iniciado"
+        : status === "finalizado"
+          ? "Atendimento finalizado"
+          : status === "cancelado"
+            ? "Atendimento cancelado"
+            : "Status atualizado",
+      "success"
     );
 
   } catch (error) {
@@ -2516,8 +3047,8 @@ document.addEventListener(
     if (conflito) {
 
       mostrarToast(
-        "Horário já ocupado. Não é possível reativar.",
-        "erro"
+        "Não foi possível reativar. Já existe um atendimento neste horário.",
+        "error"
       );
 
       return;
@@ -3121,6 +3652,8 @@ btnNovoAgendamento?.addEventListener(
   "click",
   () => {
 
+    atualizarFluxoNovoAtendimento();
+
     document.getElementById(
       "titulo-novo-atendimento"
     ).textContent =
@@ -3146,14 +3679,40 @@ btnNovoAgendamento?.addEventListener(
       "hidden"
     );
 
+    document.getElementById(
+      "toast"
+    )?.classList.remove(
+      "show"
+    );
+
     modalNovoAtendimento.style.display =
       "flex";
+
+    alertaPendenciasFixo?.classList.add(
+      "alerta-bloqueado"
+    );
+
+    setTimeout(() => {
+
+      document.getElementById(
+        "novoNome"
+      )?.focus();
+
+    }, 100);
   }
 );
 
 btnNovoEncaixe?.addEventListener(
   "click",
   () => {
+
+    setTimeout(() => {
+
+      document.getElementById(
+        "novoNome"
+      )?.focus();
+
+    }, 100);
 
     document.getElementById(
       "titulo-novo-atendimento"
@@ -3174,6 +3733,12 @@ btnNovoEncaixe?.addEventListener(
       "hidden"
     );
 
+    document.getElementById(
+      "toast"
+    )?.classList.remove(
+      "show"
+    );
+
     modalNovoAtendimento.style.display =
       "flex";
   }
@@ -3192,6 +3757,48 @@ const formNovoAtendimento =
     "form-novo-atendimento"
   );
 
+function atualizarFluxoNovoAtendimento() {
+
+  const nome =
+    document.getElementById("novoNome");
+
+  const sobrenome =
+    document.getElementById("novoSobrenome");
+
+  const telefone =
+    document.getElementById("novoTelefone");
+
+  const profissional =
+    document.getElementById("novoProfissional");
+
+  const servico =
+    document.getElementById("novoServico");
+
+  const data =
+    document.getElementById("novoData");
+
+  const hora =
+    document.getElementById("novoHora");
+
+  sobrenome.disabled =
+    !nome.value.trim();
+
+  telefone.disabled =
+    !sobrenome.value.trim();
+
+  profissional.disabled =
+    !telefone.value.trim();
+
+  servico.disabled =
+    !profissional.value;
+
+  data.disabled =
+    !servico.value;
+
+  hora.disabled =
+    !data.value;
+}
+
 formNovoAtendimento?.addEventListener(
   "submit",
   async (e) => {
@@ -3199,13 +3806,82 @@ formNovoAtendimento?.addEventListener(
     e.preventDefault();
 
     const nome =
-      document.getElementById("novoNome").value.trim();
+      document.getElementById("novoNome")
+        ?.value.trim();
 
     const sobrenome =
-      document.getElementById("novoSobrenome").value.trim();
+      document.getElementById("novoSobrenome")
+        ?.value.trim();
 
     const telefone =
-      document.getElementById("novoTelefone").value.trim();
+      document.getElementById("novoTelefone")
+        ?.value.trim();
+
+    const profissionalSelecionado =
+      document.getElementById("novoProfissional")
+        ?.value;
+
+    const servicoSelecionado =
+      document.getElementById("novoServico")
+        ?.value;
+
+    const data =
+      document.getElementById("novoData")
+        ?.value;
+
+    if (!nome) {
+      mostrarToast(
+        "Informe o nome do cliente",
+        "error"
+      );
+      document.getElementById("novoNome")?.focus();
+      return;
+    }
+
+    if (!sobrenome) {
+      mostrarToast(
+        "Informe o sobrenome do cliente",
+        "error"
+      );
+      document.getElementById("novoSobrenome")?.focus();
+      return;
+    }
+
+    if (!telefone) {
+      mostrarToast(
+        "Informe o telefone do cliente",
+        "error"
+      );
+      document.getElementById("novoTelefone")?.focus();
+      return;
+    }
+
+    if (!profissionalSelecionado) {
+      mostrarToast(
+        "Selecione um profissional primeiro",
+        "error"
+      );
+      document.getElementById("novoProfissional")?.focus();
+      return;
+    }
+
+    if (!servicoSelecionado) {
+      mostrarToast(
+        "Selecione um serviço primeiro",
+        "error"
+      );
+      document.getElementById("novoServico")?.focus();
+      return;
+    }
+
+    if (!data) {
+      mostrarToast(
+        "Selecione uma data primeiro",
+        "error"
+      );
+      document.getElementById("novoData")?.focus();
+      return;
+    }
 
     const profissionalId =
       document.getElementById("novoProfissional").value;
@@ -3213,15 +3889,12 @@ formNovoAtendimento?.addEventListener(
     const servicoId =
       document.getElementById("novoServico").value;
 
-    const data =
-      document.getElementById("novoData").value;
-
     const tituloModal =
       document.getElementById(
         "titulo-novo-atendimento"
       ).textContent;
 
-    const hora =
+    const horaFinal =
 
       tituloModal.includes("Encaixe")
 
@@ -3233,23 +3906,54 @@ formNovoAtendimento?.addEventListener(
           "novoHora"
         ).value;
 
-    if (!hora) {
+    if (!profissionalId) {
 
       mostrarToast(
-        "Informe um horário",
+        "Selecione um profissional",
         "error"
       );
 
       return;
+    }
 
+    if (!servicoId) {
+
+      mostrarToast(
+        "Selecione um serviço",
+        "error"
+      );
+
+      return;
+    }
+
+    if (!data) {
+
+      mostrarToast(
+        "Selecione uma data",
+        "error"
+      );
+
+      return;
+    }
+
+    if (!horaFinal) {
+
+      mostrarToast(
+        "Selecione um horário",
+        "error"
+      );
+
+      return;
     }
 
     const profissional =
+
       profissionaisCache.find(
         p => p.id === profissionalId
       );
 
     const servico =
+
       servicosCache.find(
         s => s.id === servicoId
       );
@@ -3311,7 +4015,7 @@ formNovoAtendimento?.addEventListener(
         dataBR:
           dataBR,
 
-        hora,
+        hora: horaFinal,
 
         status:
           "confirmado",
@@ -3335,6 +4039,8 @@ formNovoAtendimento?.addEventListener(
 
     formNovoAtendimento.reset();
 
+    atualizarFluxoNovoAtendimento();
+
     modalNovoAtendimento.classList.add(
       "hidden"
     );
@@ -3353,5 +4059,170 @@ formNovoAtendimento?.addEventListener(
     );
 
     await carregarAgendaGeral();
+  }
+);
+
+// ======================
+// FORMULÁRIOS RECOLHÍVEIS
+// ======================
+
+const toggleCadastroServico =
+  document.getElementById(
+    "toggleCadastroServico"
+  );
+
+const containerCadastroServico =
+  document.getElementById(
+    "containerCadastroServico"
+  );
+
+if (
+  toggleCadastroServico &&
+  containerCadastroServico
+) {
+
+  containerCadastroServico.style.display =
+    "none";
+
+  toggleCadastroServico.addEventListener(
+    "click",
+    () => {
+
+      const aberto =
+        containerCadastroServico.style.display ===
+        "block";
+
+      containerCadastroServico.style.display =
+        aberto ? "none" : "block";
+
+      toggleCadastroServico.textContent =
+        aberto
+          ? "▶ Cadastrar serviço"
+          : "▼ Cadastrar serviço";
+
+    }
+  );
+
+}
+
+const toggleCadastroProfissional =
+  document.getElementById(
+    "toggleCadastroProfissional"
+  );
+
+const containerCadastroProfissional =
+  document.getElementById(
+    "containerCadastroProfissional"
+  );
+
+if (
+  toggleCadastroProfissional &&
+  containerCadastroProfissional
+) {
+
+  containerCadastroProfissional.style.display =
+    "none";
+
+  toggleCadastroProfissional.addEventListener(
+    "click",
+    () => {
+
+      const aberto =
+        containerCadastroProfissional.style.display ===
+        "block";
+
+      containerCadastroProfissional.style.display =
+        aberto ? "none" : "block";
+
+      toggleCadastroProfissional.textContent =
+        aberto
+          ? "▶ Cadastrar profissional"
+          : "▼ Cadastrar profissional";
+
+    }
+  );
+
+}
+
+document.addEventListener(
+  "input",
+  (e) => {
+
+    if (
+      e.target.closest(
+        "#form-novo-atendimento"
+      )
+    ) {
+
+      atualizarFluxoNovoAtendimento();
+
+    }
+
+  }
+);
+
+document.addEventListener(
+  "change",
+  async (e) => {
+
+    atualizarFluxoNovoAtendimento();
+
+    if (e.target.id === "novoProfissional") {
+
+      const nome = document.getElementById("novoNome")?.value.trim();
+      const sobrenome = document.getElementById("novoSobrenome")?.value.trim();
+      const telefone = document.getElementById("novoTelefone")?.value.trim();
+
+      if (!nome) {
+        mostrarToast("Informe o nome do cliente", "error");
+        e.target.value = "";
+        return;
+      }
+
+      if (!sobrenome) {
+        mostrarToast("Informe o sobrenome do cliente", "error");
+        e.target.value = "";
+        return;
+      }
+
+      if (!telefone) {
+        mostrarToast("Informe o telefone do cliente", "error");
+        e.target.value = "";
+        return;
+      }
+
+      preencherSelectServicosNovoAtendimento(e.target.value);
+
+      document.getElementById("novoHora").innerHTML = `
+        <option value="">
+          Selecione um horário
+        </option>
+      `;
+
+      atualizarFluxoNovoAtendimento();
+
+      return;
+    }
+
+    if (e.target.id === "novoServico") {
+
+      const profissional =
+        document.getElementById("novoProfissional")?.value;
+
+      if (!profissional) {
+        mostrarToast("Selecione um profissional primeiro", "error");
+        e.target.value = "";
+        return;
+      }
+    }
+
+    if (
+      e.target.id === "novoServico" ||
+      e.target.id === "novoData"
+    ) {
+      await carregarHorariosNovoAgendamento();
+      atualizarFluxoNovoAtendimento();
+    }
+
   }
 );

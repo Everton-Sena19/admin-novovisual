@@ -28,6 +28,8 @@
 
     </button>
 
+    <div id="alerta-pendencias-fixo"></div>
+
     <div class="admin-layout">
 
       <aside class="sidebar">
@@ -74,331 +76,348 @@
             Carregando dashboard...
           </div>
 
-          <div class="grafico-card">
+          <div class="grafico-topo">
 
-            <div class="grafico-topo">
-
-              <h3>Faturamento</h3>
-
-              <span>
-                Visão financeira
-              </span>
-
-            </div>
-
-            <canvas id="graficoFaturamento"></canvas>
-
-          </div>
-
-          <section class="card agenda-operacional">
-
-            <div class="agenda-operacional-topo">
-
-              <h2>Agenda do Dia</h2>
-
-              <span>
-                Operação em tempo real
-              </span>
-
-            </div>
-
-            <div id="agenda-operacional-lista">
-
-              Carregando agenda...
-
-            </div>
-
-          </section>
-        </section>
-
-        <section class="card agenda-concluidos">
-
-          <div class="agenda-operacional-topo">
-
-            <h2>Concluídos Hoje</h2>
+            <h3>Faturamento</h3>
 
             <span>
-              Histórico operacional
+              Visão financeira
             </span>
 
           </div>
 
-          <div id="agenda-concluidos-lista">
+          <canvas id="graficoFaturamento"></canvas>
 
-            Nenhum atendimento finalizado.
+    </div>
 
-          </div>
+    <section class="card agenda-operacional">
 
-        </section>
+      <div class="agenda-operacional-topo">
 
-        <section id="agenda-geral" class="card agenda-geral-fechada">
+        <h2>Agenda do Dia</h2>
 
-          <div class="agenda-geral-topo">
+        <span>
+          Operação em tempo real
+        </span>
 
-            <div class="agenda-geral-header-esquerda">
+      </div>
 
-              <div>
+      <div id="agenda-operacional-lista">
 
-                <h2>
-                  Agenda Geral
-                </h2>
+        Carregando agenda...
 
-                <span>
-                  Histórico completo de atendimentos
-                </span>
+      </div>
 
-              </div>
+    </section>
+    </section>
 
-              <button id="btn-toggle-agenda-geral" type="button" class="btn-toggle-agenda">
+    <section class="card agenda-concluidos">
 
-                Abrir agenda
+      <div class="agenda-operacional-topo">
 
-              </button>
+        <h2>Concluídos Hoje</h2>
 
-              <button id="btn-novo-agendamento" type="button" class="btn-novo-atendimento">
-                📅 Novo Agendamento
-              </button>
+        <span>
+          Histórico operacional
+        </span>
 
-              <button id="btn-novo-encaixe" type="button" class="btn-novo-atendimento">
-                ⚡ Novo Encaixe
-              </button>
+      </div>
 
-            </div>
+      <div id="agenda-concluidos-lista">
 
-            <div class="agenda-geral-filtros">
+        Nenhum atendimento finalizado.
 
-              <input type="text" id="busca-agenda-geral" placeholder="Buscar cliente...">
+      </div>
 
-              <select id="filtro-periodo-agenda">
+    </section>
 
-                <option value="hoje">
-                  Hoje
-                </option>
+    <section id="agenda-geral" class="card agenda-geral-fechada">
 
-                <option value="semana">
-                  Esta semana
-                </option>
+      <div class="agenda-geral-topo">
 
-                <option value="mes">
-                  Este mês
-                </option>
+        <div class="agenda-geral-header-esquerda">
 
-                <option value="todos">
-                  Todos
-                </option>
+          <div>
 
-              </select>
+            <h2>
+              Agenda Geral
+            </h2>
 
-              <select id="filtro-status-agenda">
-
-                <option value="">
-                  Todos status
-                </option>
-
-                <option value="confirmado">
-                  Confirmado
-                </option>
-
-                <option value="atendimento">
-                  Em atendimento
-                </option>
-
-                <option value="finalizado">
-                  Finalizado
-                </option>
-
-                <option value="cancelado">
-                  Cancelado
-                </option>
-
-              </select>
-
-            </div>
+            <span>
+              Histórico completo de atendimentos
+            </span>
 
           </div>
 
-          <div class="agenda-geral-resumo">
+          <button id="btn-toggle-agenda-geral" type="button" class="btn-toggle-agenda">
 
-            <div class="agenda-geral-kpi faturamento">
+            Abrir agenda
 
-              <span>
-                Faturamento
-              </span>
+          </button>
 
-              <strong id="kpi-faturamento-geral">
+          <button id="btn-novo-agendamento" type="button" class="btn-novo-atendimento">
+            📅 Novo Agendamento
+          </button>
 
-                R$ 0,00
+          <button id="btn-novo-encaixe" type="button" class="btn-novo-atendimento">
+            ⚡ Novo Encaixe
+          </button>
 
-              </strong>
+        </div>
 
-            </div>
+        <div class="agenda-geral-filtros">
 
-            <div class="agenda-geral-kpi finalizados">
+          <input type="text" id="busca-agenda-geral" placeholder="Buscar cliente...">
 
-              <span>
-                Finalizados
-              </span>
+          <select id="filtro-periodo-agenda">
 
-              <strong id="kpi-finalizados-geral">
+            <option value="hoje">
+              Hoje
+            </option>
 
-                0
+            <option value="semana">
+              Esta semana
+            </option>
 
-              </strong>
+            <option value="mes">
+              Este mês
+            </option>
 
-            </div>
+            <option value="todos">
+              Todos
+            </option>
 
-            <div class="agenda-geral-kpi cancelados">
+          </select>
 
-              <span>
-                Cancelados
-              </span>
+          <select id="filtro-status-agenda">
 
-              <strong id="kpi-cancelados-geral">
+            <option value="">
+              Todos status
+            </option>
 
-                0
+            <option value="confirmado">
+              Confirmado
+            </option>
 
-              </strong>
+            <option value="atendimento">
+              Em atendimento
+            </option>
 
-            </div>
+            <option value="finalizado">
+              Finalizado
+            </option>
 
-            <div class="agenda-geral-kpi atendimentos">
+            <option value="cancelado">
+              Cancelado
+            </option>
 
-              <span>
-                Atendimentos
-              </span>
+          </select>
 
-              <strong id="kpi-atendimentos-geral">
+        </div>
 
-                0
+      </div>
 
-              </strong>
+      <div class="agenda-geral-resumo">
 
-            </div>
+        <div class="agenda-geral-kpi faturamento">
 
-            <div class="agenda-geral-kpi ticket">
+          <span>
+            Faturamento
+          </span>
 
-              <span>
-                Ticket médio
-              </span>
+          <strong id="kpi-faturamento-geral">
 
-              <strong id="kpi-ticket-medio">
+            R$ 0,00
 
-                R$ 0,00
+          </strong>
 
-              </strong>
+        </div>
 
-            </div>
+        <div class="agenda-geral-kpi finalizados">
 
-            <div class="agenda-geral-kpi cancelamento-taxa">
+          <span>
+            Finalizados
+          </span>
 
-              <span>
-                Taxa cancelamento
-              </span>
+          <strong id="kpi-finalizados-geral">
 
-              <strong id="kpi-taxa-cancelamento">
+            0
 
-                0%
+          </strong>
 
-              </strong>
+        </div>
 
-            </div>
+        <div class="agenda-geral-kpi cancelados">
 
-          </div>
+          <span>
+            Cancelados
+          </span>
 
-          <div id="resumo-profissionais">
+          <strong id="kpi-cancelados-geral">
 
-          </div>
+            0
 
-          <div id="agenda-geral-conteudo">
+          </strong>
 
-            <div id="agenda-geral-lista">
+        </div>
 
-              Carregando agenda geral...
+        <div class="agenda-geral-kpi atendimentos">
 
-            </div>
+          <span>
+            Atendimentos
+          </span>
 
-          </div>
+          <strong id="kpi-atendimentos-geral">
 
-        </section>
+            0
 
-        <section id="servicos" class="card">
-          <h2>Cadastrar serviço</h2>
+          </strong>
 
-          <form id="form-servico">
-            <input type="text" id="servicoNome" placeholder="Nome do serviço" required>
-            <input type="number" id="servicoValor" placeholder="Valor" required>
-            <input type="number" id="servicoTempo" placeholder="Tempo em minutos" required>
-            <input type="text" id="servicoFoto" placeholder="URL da imagem (opcional)">
-            <select id="profissionalServico" required></select>
+        </div>
 
-            <select id="servicoCategoria" required>
-              <option value="">Selecione a categoria</option>
-              <option value="Cabelo">Cabelo</option>
-              <option value="Unhas">Unhas</option>
-              <option value="Estética">Estética</option>
-            </select>
+        <div class="agenda-geral-kpi ticket">
 
-            <select id="grupoOperacional" required>
-              <option value="">Grupo operacional</option>
+          <span>
+            Ticket médio
+          </span>
 
-              <option value="cabelo">
-                Cabelo
-              </option>
+          <strong id="kpi-ticket-medio">
 
-              <option value="manicure_mao">
-                Manicure
-              </option>
+            R$ 0,00
 
-              <option value="manicure_pe">
-                Pedicure
-              </option>
+          </strong>
 
-              <option value="maquiagem">
-                Maquiagem
-              </option>
+        </div>
 
-              <option value="estetica">
-                Estética
-              </option>
-            </select>
+        <div class="agenda-geral-kpi cancelamento-taxa">
 
-            <button type="submit">Salvar serviço</button>
+          <span>
+            Taxa cancelamento
+          </span>
 
-          </form>
+          <strong id="kpi-taxa-cancelamento">
 
-          <h2>Serviços</h2>
-          <div id="lista-servicos"></div>
-        </section>
+            0%
 
-        <section id="profissionais" class="card">
-          <h2>Cadastrar profissional</h2>
+          </strong>
 
-          <form id="form-profissional">
+        </div>
 
-            <input type="text" id="nome" placeholder="Nome" required>
-            <input type="text" id="whatsapp" placeholder="WhatsApp" required>
-            <input type="text" id="cargo" placeholder="Cargo" required>
-            <input type="email" id="emailProfissional" placeholder="Email do profissional" required>
-            <input type="password" id="senhaProfissional" placeholder="Senha inicial" required>
-            <select id="tipoAcesso" required>
+      </div>
 
-              <option value="profissional_restrito">Profissional restrito</option>
-              <option value="profissional_admin">Profissional admin</option>
-              <option value="admin">Admin total</option>
-            </select>
+      <div id="resumo-profissionais">
 
-            <input type="time" id="inicioExpediente" required>
-            <input type="time" id="fimExpediente" required>
+      </div>
 
-            <button type="submit">Salvar profissional</button>
-          </form>
+      <div id="agenda-geral-conteudo">
 
-          <h2>Profissionais</h2>
-          <div id="lista-profissionais"></div>
-        </section>
+        <div id="agenda-geral-lista">
 
-      </main>
-    </div> <!-- fecha admin-layout -->
+          Carregando agenda geral...
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section id="servicos" class="card">
+
+      <h2 id="toggleCadastroServico" class="toggle-form">
+        ▶ Cadastrar serviço
+      </h2>
+
+      <div id="containerCadastroServico">
+
+        <form id="form-servico">
+          <input type="text" id="servicoNome" placeholder="Nome do serviço" required>
+          <input type="number" id="servicoValor" placeholder="Valor" required>
+          <input type="number" id="servicoTempo" placeholder="Tempo em minutos" required>
+          <input type="text" id="servicoFoto" placeholder="URL da imagem (opcional)">
+          <select id="profissionalServico" required></select>
+
+          <select id="servicoCategoria" required>
+            <option value="">Selecione a categoria</option>
+            <option value="Cabelo">Cabelo</option>
+            <option value="Unhas">Unhas</option>
+            <option value="Estética">Estética</option>
+          </select>
+
+          <select id="grupoOperacional" required>
+            <option value="">Grupo operacional</option>
+
+            <option value="cabelo">
+              Cabelo
+            </option>
+
+            <option value="manicure_mao">
+              Manicure
+            </option>
+
+            <option value="manicure_pe">
+              Pedicure
+            </option>
+
+            <option value="maquiagem">
+              Maquiagem
+            </option>
+
+            <option value="estetica">
+              Estética
+            </option>
+          </select>
+
+          <button type="submit">Salvar serviço</button>
+
+        </form>
+
+      </div>
+
+      <h2>Serviços</h2>
+      <div id="lista-servicos"></div>
+    </section>
+
+    <section id="profissionais" class="card">
+
+      <h2 id="toggleCadastroProfissional" class="toggle-form">
+        ▶ Cadastrar profissional
+      </h2>
+
+      <di id="containerCadastroProfissional">
+
+        <form id="form-profissional">
+
+          <input type="text" id="nome" placeholder="Nome" required>
+          <input type="text" id="whatsapp" placeholder="WhatsApp" required>
+          <input type="text" id="cargo" placeholder="Cargo" required>
+          <input type="email" id="emailProfissional" placeholder="Email do profissional" required>
+          <input type="password" id="senhaProfissional" placeholder="Senha inicial" required>
+          <select id="tipoAcesso" required>
+
+            <option value="profissional_restrito">Profissional restrito</option>
+            <option value="profissional_admin">Profissional admin</option>
+            <option value="admin">Admin total</option>
+          </select>
+
+          <input type="time" id="inicioExpediente" required>
+          <input type="time" id="fimExpediente" required>
+
+          <button type="submit">Salvar profissional</button>
+
+        </form>
+
+        <h2>Profissionais</h2>
+
+        <div id="lista-profissionais">
+
+        </div>
+
+  </div>
+
+  </section>
+
+  </main>
+  </div> <!-- fecha admin-layout -->
   </div> <!-- fecha admin-content -->
   <div id="toast"></div>
 
@@ -511,15 +530,15 @@
 
       </h3>
 
-      <form id="form-novo-atendimento">
+      <form id="form-novo-atendimento" novalidate>
 
-        <input type="text" id="novoNome" placeholder="Nome" required>
+        <input type="text" id="novoNome" placeholder="Nome">
 
-        <input type="text" id="novoSobrenome" placeholder="Sobrenome" required>
+        <input type="text" id="novoSobrenome" placeholder="Sobrenome">
 
-        <input type="text" id="novoTelefone" placeholder="Telefone" required>
+        <input type="text" id="novoTelefone" placeholder="Telefone">
 
-        <select id="novoProfissional" required>
+        <select id="novoProfissional">
 
           <option value="">
 
@@ -529,7 +548,7 @@
 
         </select>
 
-        <select id="novoServico" required>
+        <select id="novoServico">
 
           <option value="">
 
@@ -539,9 +558,9 @@
 
         </select>
 
-        <input type="date" id="novoData" required>
+        <input type="date" id="novoData">
 
-        <select id="novoHora" required>
+        <select id="novoHora">
 
           <option value="">
             Selecione um horário
