@@ -9,6 +9,10 @@
   <title>Painel Admin | Salão</title>
 
   <link rel="stylesheet" href="./admin-v2.css">
+
+  <link rel="manifest" href="./manifest-admin.json">
+
+  <meta name="theme-color" content="#0f172a">
 </head>
 
 <body>
@@ -594,6 +598,16 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="admin.js"></script>
+  <script>
+  if ("serviceWorker" in navigator) {
+
+    navigator.serviceWorker
+      .register("./sw-admin.js")
+      .then(() => console.log("SW Admin registrado"))
+      .catch(console.error);
+
+  }
+  </script>
 
 </body>
 
