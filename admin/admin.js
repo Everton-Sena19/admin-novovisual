@@ -4226,3 +4226,85 @@ document.addEventListener(
 
   }
 );
+
+/* =========================================
+   INSTALAÇÃO PWA ADMIN
+========================================= */
+
+let deferredPromptAdmin;
+
+const bannerPWA =
+  document.getElementById(
+    "pwaInstallBanner"
+  );
+
+const btnInstalarPWA =
+  document.getElementById(
+    "btnInstalarPWA"
+  );
+
+const btnFecharPWA =
+  document.getElementById(
+    "btnFecharPWA"
+  );
+
+window.addEventListener(
+  "beforeinstallprompt",
+  (e) => {
+
+    e.preventDefault();
+
+    deferredPromptAdmin = e;
+
+    bannerPWA?.classList.remove(
+      "hidden"
+    );
+
+  }
+);
+
+btnInstalarPWA?.addEventListener(
+  "click",
+  async () => {
+
+    if (!deferredPromptAdmin)
+      return;
+
+    deferredPromptAdmin.prompt();
+
+    await deferredPromptAdmin.userChoice;
+
+    deferredPromptAdmin = null;
+
+    bannerPWA?.classList.add(
+      "hidden"
+    );
+
+  }
+);
+
+btnFecharPWA?.addEventListener(
+  "click",
+  () => {
+
+    bannerPWA?.classList.add(
+      "hidden"
+    );
+
+  }
+);
+
+window.addEventListener(
+  "appinstalled",
+  () => {
+
+    bannerPWA?.classList.add(
+      "hidden"
+    );
+
+    console.log(
+      "PWA Admin instalado"
+    );
+
+  }
+);

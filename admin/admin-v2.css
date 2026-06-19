@@ -3646,3 +3646,157 @@ button[type="submit"]:hover {
   color: #7c3aed;
 
 }
+
+/* =========================================
+   PWA INSTALL ADMIN
+========================================= */
+
+.pwa-install-banner {
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,.65);
+
+  backdrop-filter: blur(6px);
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  z-index: 99999;
+
+}
+
+.hidden {
+
+  display: none !important;
+
+}
+
+.pwa-install-card {
+
+  width: min(420px, 92vw);
+
+  background:
+    linear-gradient(
+      180deg,
+      #071327,
+      #0f172a
+    );
+
+  border: 1px solid rgba(214,178,94,.35);
+
+  border-radius: 28px;
+
+  padding: 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.45);
+
+}
+
+.pwa-install-logo {
+
+  width: 180px;
+
+  max-width: 100%;
+
+  margin-bottom: 12px;
+}
+
+.pwa-install-card h3 {
+
+  color: #D6B25E;
+
+  font-size: 24px;
+
+  margin-bottom: 18px;
+
+}
+
+.pwa-install-recursos {
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 10px;
+
+  flex-wrap: wrap;
+
+  margin-bottom: 18px;
+}
+
+.pwa-install-recursos span {
+
+  background: rgba(214,178,94,.10);
+
+  border: 1px solid rgba(214,178,94,.20);
+
+  color: #D6B25E;
+
+  padding: 8px 12px;
+
+  border-radius: 999px;
+
+  font-size: 13px;
+
+}
+
+.pwa-install-card p {
+
+  color: #d1d5db;
+
+  line-height: 1.5;
+
+  margin-bottom: 20px;
+
+}
+
+.pwa-install-btn {
+
+  width: 100%;
+
+  border: none;
+
+  border-radius: 14px;
+
+  padding: 14px;
+
+  cursor: pointer;
+
+  font-weight: 700;
+
+  color: #000;
+
+  background:
+    linear-gradient(
+      180deg,
+      #D6B25E,
+      #B88A2B
+    );
+
+}
+
+.pwa-install-close {
+
+  margin-top: 18px;
+
+  padding-bottom: 6px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #9ca3af;
+
+  cursor: pointer;
+
+  font-size: 14px;
+}
