@@ -489,30 +489,92 @@ function preencherSelectServicosNovoAtendimento(
   const servicosFiltrados =
     profissionalId
       ? servicosCache.filter(
-        s =>
-          s.profissionalId ===
-          profissionalId
-      )
+          s =>
+            s.profissionalId ===
+            profissionalId
+        )
       : [];
 
-  select.innerHTML = `
+  const categorias = {};
 
-    <option value="">
+  console.log(
+    "CATEGORIAS ENCONTRADAS:",
+    servicosFiltrados.map(s => ({
+      nome: s.nome,
+      categoria: s.categoria
+    }))
+  );      
+
+  servicosFiltrados.forEach(servico => {
+
+    const categoria =
+      servico.categoria ||
+      "Outros";
+
+    if (!categorias[categoria]) {
+
+      categorias[categoria] = [];
+
+    }
+
+    categorias[categoria].push(
+      servico
+    );
+
+  });
+
+  select.innerHTML =
+    `<option value="">
       Selecione o serviço
-    </option>
+    </option>`;
 
-    ${servicosFiltrados.map(servico => `
+  Object.keys(categorias)
+    .sort()
+    .forEach(categoria => {
 
-      <option value="${servico.id}">
-        ${servico.nome}
-      </option>
+      const grupo =
+        document.createElement(
+          "optgroup"
+        );
 
-    `).join("")}
+      grupo.label =
+        categoria.toUpperCase();
 
-  `;
+      categorias[categoria]
+        .sort((a, b) =>
+          a.nome.localeCompare(
+            b.nome
+          )
+        )
+        .forEach(servico => {
+
+          const option =
+            document.createElement(
+              "option"
+            );
+
+          option.value =
+            servico.id;
+
+          option.textContent =
+            servico.nome;
+
+          grupo.appendChild(
+            option
+          );
+
+        });
+
+      select.appendChild(
+        grupo
+      );
+
+    });
+
 }
 
 function minToHHMMNovo(min) {
+
   const h = Math.floor(min / 60);
   const m = min % 60;
 
@@ -2329,6 +2391,25 @@ async function carregarPerfilUsuario() {
 
   });
 
+  // ✅ CORREÇÃO CRÍTICA:
+  // Se o usuário logado não estiver vinculado a um profissional,
+  // tratamos como admin geral para não quebrar o carregamento.
+  if (!perfilLogado) {
+
+    perfilLogado = {
+      id: usuarioLogado.uid,
+      nome: usuarioLogado.email || "Administrador",
+      email: usuarioLogado.email || "",
+      tipoAcesso: "admin"
+    };
+
+    console.warn(
+      "Usuário autenticado sem perfil em profissionais. Aplicando acesso admin geral:",
+      perfilLogado
+    );
+
+  }
+
 }
 
 function aplicarPermissoes() {
@@ -3614,6 +3695,11 @@ const modalNovoAtendimento =
   document.getElementById(
     "modal-novo-atendimento"
   );
+
+const alertaPendenciasFixo =
+  document.getElementById(
+    "alerta-pendencias-fixo"
+);
 
 const btnFecharNovoAtendimento =
   document.getElementById(
