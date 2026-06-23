@@ -489,10 +489,10 @@ function preencherSelectServicosNovoAtendimento(
   const servicosFiltrados =
     profissionalId
       ? servicosCache.filter(
-          s =>
-            s.profissionalId ===
-            profissionalId
-        )
+        s =>
+          s.profissionalId ===
+          profissionalId
+      )
       : [];
 
   const categorias = {};
@@ -503,7 +503,7 @@ function preencherSelectServicosNovoAtendimento(
       nome: s.nome,
       categoria: s.categoria
     }))
-  );      
+  );
 
   servicosFiltrados.forEach(servico => {
 
@@ -1453,12 +1453,15 @@ async function carregarAgendaGeral() {
     agora.getHours() * 60 +
     agora.getMinutes();
 
-  const hoje =
-    agora.toISOString().slice(0, 10);
+  const hojeLocal =
+    `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
 
   let proximoDefinido = false;
 
   agendaGeralCache.forEach(item => {
+
+    item.atrasado = false;
+    item.proximo = false;
 
     if (!item.data || !item.hora) return;
 
@@ -1476,7 +1479,7 @@ async function carregarAgendaGeral() {
 
     if (
 
-      item.data === hoje &&
+      item.data === hojeLocal &&
 
       horarioItem < horaAtual &&
 
@@ -1500,7 +1503,7 @@ async function carregarAgendaGeral() {
 
       !proximoDefinido &&
 
-      item.data === hoje &&
+      item.data === hojeLocal &&
 
       horarioItem >= horaAtual &&
 
@@ -1533,9 +1536,7 @@ async function carregarAgendaGeral() {
 
   });
 
-  renderizarAgendaGeral(
-    agendaGeralCache
-  );
+  aplicarFiltrosAgendaGeral();
 
 }
 
@@ -1558,6 +1559,11 @@ async function carregarDashboard() {
 
   const agendamentos =
     await buscarAgendamentosPorProfissionais(profissionais);
+
+  console.log(
+    "AGENDAMENTOS COMPLETOS:",
+    agendamentos
+  );
 
   agendamentos.forEach(item => {
 
@@ -1677,26 +1683,26 @@ async function carregarDashboard() {
           new Date(`${b.data}T${b.hora}`)
       )[0];
 
-      console.log(
-        "MAIS ANTIGA:",
-        maisAntigaPendencia
-      );
+  console.log(
+    "MAIS ANTIGA:",
+    maisAntigaPendencia
+  );
 
   const diasEmAberto =
     maisAntigaPendencia
 
       ? Math.floor(
 
-          (
-            new Date() -
-            new Date(
-              `${maisAntigaPendencia.data}T${maisAntigaPendencia.hora}`
-            )
-          ) /
+        (
+          new Date() -
+          new Date(
+            `${maisAntigaPendencia.data}T${maisAntigaPendencia.hora}`
+          )
+        ) /
 
-          (1000 * 60 * 60 * 24)
+        (1000 * 60 * 60 * 24)
 
-        )
+      )
 
       : 0;
 
@@ -1748,6 +1754,9 @@ async function carregarDashboard() {
 
   agendaOrdenada.forEach(item => {
 
+    item.atrasado = false;
+    item.proximo = false;
+
     const [h, m] =
       (item.hora || "00:00")
         .split(":")
@@ -1757,6 +1766,8 @@ async function carregarDashboard() {
       h * 60 + m;
 
     if (
+
+      item.data === hojeLocal &&
 
       horarioItem < horaAtual &&
 
@@ -1769,13 +1780,20 @@ async function carregarDashboard() {
     ) {
 
       item.atrasado = true;
+
     }
 
     if (
       !proximoDefinido &&
+
+      item.data === hojeLocal &&
+
       horarioItem >= horaAtual &&
+
       item.status !== "finalizado" &&
+
       item.status !== "cancelado"
+
     ) {
 
       item.proximo = true;
@@ -1849,20 +1867,11 @@ async function carregarDashboard() {
 
   if (alertaPendenciasFixo) {
 
-    console.log(
-      "ENTROU NO ALERTA"
-    );
+    alertaPendenciasFixo.innerHTML =
 
-    console.log(
-      "TOTAL PENDENTES:",
       totalPendentesFinalizacao
-    );
 
-   alertaPendenciasFixo.innerHTML =
-
-  totalPendentesFinalizacao
-
-    ? `
+        ? `
 
       <div class="alerta-operacional">
 
@@ -1909,8 +1918,8 @@ async function carregarDashboard() {
 
           <strong>
             ${maisAntigaPendencia?.dataBR ||
-              maisAntigaPendencia?.data ||
-              ""}
+        maisAntigaPendencia?.data ||
+        ""}
           </strong>
 
           <strong>
@@ -1954,7 +1963,7 @@ async function carregarDashboard() {
 
     `
 
-    : "";
+        : "";
 
     alertaPendenciasFixo.style.display =
       "block";
@@ -2645,10 +2654,40 @@ function aplicarFiltrosAgendaGeral() {
       periodo === "semana"
     ) {
 
-      return diffDias <= 7;
+      const inicioSemana = new Date(hoje);
+
+      inicioSemana.setHours(0, 0, 0, 0);
+
+      const diaSemana = inicioSemana.getDay();
+
+      const ajuste =
+        diaSemana === 0
+          ? -6
+          : 1 - diaSemana;
+
+      inicioSemana.setDate(
+        inicioSemana.getDate() + ajuste
+      );
+
+      const fimSemana = new Date(inicioSemana);
+
+      fimSemana.setDate(
+        inicioSemana.getDate() + 6
+      );
+
+      fimSemana.setHours(
+        23,
+        59,
+        59,
+        999
+      );
+
+      return (
+        dataObj >= inicioSemana &&
+        dataObj <= fimSemana
+      );
 
     }
-
     if (
       periodo === "mes"
     ) {
@@ -2692,11 +2731,16 @@ function aplicarFiltrosAgendaGeral() {
 
   if (statusSelecionado) {
 
-    lista = lista.filter(item =>
+    lista = lista.filter(item => {
 
-      item.status === statusSelecionado
+      const statusReal =
+        item.status === "assinar_link"
+          ? "confirmado"
+          : item.status;
 
-    );
+      return statusReal === statusSelecionado;
+
+    });
 
   }
 
@@ -2881,13 +2925,6 @@ btnConfirmarCancelamento
             return item;
 
           });
-
-        console.log(
-          "FILTRO PERIODO:",
-          filtroPeriodoAgenda?.value
-        );
-
-        filtroPeriodoAgenda.value = "todos";
 
         await carregarAgendaGeral();
 
@@ -3699,7 +3736,7 @@ const modalNovoAtendimento =
 const alertaPendenciasFixo =
   document.getElementById(
     "alerta-pendencias-fixo"
-);
+  );
 
 const btnFecharNovoAtendimento =
   document.getElementById(
