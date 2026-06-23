@@ -3602,7 +3602,13 @@ function renderizarResumoProfissionais(
   lista.forEach(item => {
 
     const nome =
+
       item.profissionalNome
+
+      || item.profissional
+
+      || item.profissionalId
+
       || "Profissional";
 
     if (!mapa[nome]) {
