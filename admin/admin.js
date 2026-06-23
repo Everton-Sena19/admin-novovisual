@@ -2729,16 +2729,30 @@ function aplicarFiltrosAgendaGeral() {
 
   }
 
+  console.log(
+    "STATUS ENCONTRADOS:",
+    lista.map(item => ({
+      cliente: item.clienteNomeCompleto,
+      status: item.status
+    }))
+  );
+
   if (statusSelecionado) {
 
     lista = lista.filter(item => {
 
-      const statusReal =
-        item.status === "assinar_link"
-          ? "confirmado"
-          : item.status;
+      const statusReal = String(
+        item.status || "confirmado"
+      )
+        .trim()
+        .toLowerCase();
 
-      return statusReal === statusSelecionado;
+      const statusNormalizado =
+        statusReal === "assinar_link"
+          ? "confirmado"
+          : statusReal;
+
+      return statusNormalizado === statusSelecionado;
 
     });
 
