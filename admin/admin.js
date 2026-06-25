@@ -1413,18 +1413,16 @@ async function carregarAgendaGeral() {
   agendaGeralLista.innerHTML =
     "Carregando agenda geral...";
 
-  let profissionais = [];
+  // ===================================================
+  // ETAPA 1 - Trabalhar somente com o profissional logado
+  // A visão administrativa do salão será implementada
+  // posteriormente em uma tela própria.
+  // ===================================================
 
-  if (perfilLogado?.tipoAcesso === "admin") {
+  const profissionais = [perfilLogado];
 
-    profissionais =
-      await buscarProfissionais();
-
-  } else {
-
-    profissionais = [perfilLogado];
-
-  }
+  console.log("PERFIL LOGADO AGENDA:", perfilLogado);
+  console.log("COLEÇÃO AGENDA:", perfilLogado?.colecao);
 
   const agendamentos =
     await buscarAgendamentosPorProfissionais(
@@ -1545,268 +1543,267 @@ async function carregarDashboard() {
   dashboardResumo.innerHTML = "Carregando...";
   agendaOperacionalLista.innerHTML = "Carregando agenda...";
 
-  let profissionais = [];
+  // ===================================================
+  // ETAPA 1 - Trabalhar somente com o profissional logado
+  // A visão administrativa do salão será implementada
+  // posteriormente em uma tela própria.
+  // ===================================================
 
-  if (perfilLogado?.tipoAcesso === "admin") {
+  const profissionais = [perfilLogado];
 
-    profissionais = await buscarProfissionais();
+  console.log("PERFIL LOGADO DASHBOARD:", perfilLogado);
+  console.log("COLEÇÃO DASHBOARD:", perfilLogado?.colecao);
 
-  } else {
+const agendamentos =
+  await buscarAgendamentosPorProfissionais(profissionais);
 
-    profissionais = [perfilLogado];
+console.log(
+  "AGENDAMENTOS COMPLETOS:",
+  agendamentos
+);
+
+agendamentos.forEach(item => {
+
+  item.status =
+    String(
+      item.status || "confirmado"
+    ).toLowerCase();
+
+});
+
+const hoje = new Date();
+
+const hojeLocal =
+
+  `${hoje.getFullYear()}-${String(hoje.getMonth() + 1)
+    .padStart(2, "0")
+  }-${String(hoje.getDate())
+    .padStart(2, "0")
+  }`;
+
+const agendaHoje =
+
+  agendamentos.filter(
+    item => item.data === hojeLocal
+  );
+
+console.log(
+  "HOJE LOCAL:",
+  hojeLocal
+);
+
+const agendaConcluidos =
+
+  agendaHoje.filter(item =>
+
+    item.status === "finalizado"
+
+  );
+
+console.log(
+  "AGENDA HOJE:",
+  agendaHoje
+);
+
+console.log(
+  "STATUS AGENDA HOJE:",
+  agendaHoje.map(item => ({
+    hora: item.hora,
+    status: item.status,
+    data: item.data
+  }))
+);
+
+const agoraPendencias = new Date();
+
+const agendaPendentesFinalizacao =
+
+  agendamentos.filter(item => {
+
+    if (
+      item.status === "finalizado" ||
+      item.status === "cancelado"
+    ) {
+      return false;
+    }
+
+    const dataHoraInicio =
+      new Date(
+        `${item.data}T${item.hora || "00:00"}`
+      );
+
+    const dataHoraFim =
+      new Date(
+        dataHoraInicio.getTime() +
+        (
+          Number(item.servicoTempoMin || 0)
+          * 60000
+        )
+      );
+
+    return agoraPendencias > dataHoraFim;
+
+  });
+
+console.log(
+  "STATUS AGORA:",
+  agendaHoje.map(item => ({
+    hora: item.hora,
+    status: item.status,
+    servico: item.servicoNome
+  }))
+);
+
+agendaPendentesFinalizacao.forEach(p => {
+
+  const encontrado =
+    agendaHoje.find(
+      item => item.id === p.id
+    );
+
+  if (encontrado) {
+
+    encontrado.pendenteFinalizacao = true;
 
   }
 
-  const agendamentos =
-    await buscarAgendamentosPorProfissionais(profissionais);
+});
 
-  console.log(
-    "AGENDAMENTOS COMPLETOS:",
-    agendamentos
-  );
+const primeiraPendencia =
+  agendaPendentesFinalizacao[0];
 
-  agendamentos.forEach(item => {
+const maisAntigaPendencia =
+  agendaPendentesFinalizacao
+    .sort(
+      (a, b) =>
+        new Date(`${a.data}T${a.hora}`) -
+        new Date(`${b.data}T${b.hora}`)
+    )[0];
 
-    item.status =
-      String(
-        item.status || "confirmado"
-      ).toLowerCase();
+console.log(
+  "MAIS ANTIGA:",
+  maisAntigaPendencia
+);
 
-  });
+const diasEmAberto =
+  maisAntigaPendencia
 
-  const hoje = new Date();
+    ? Math.floor(
 
-  const hojeLocal =
-
-    `${hoje.getFullYear()}-${String(hoje.getMonth() + 1)
-      .padStart(2, "0")
-    }-${String(hoje.getDate())
-      .padStart(2, "0")
-    }`;
-
-  const agendaHoje =
-
-    agendamentos.filter(
-      item => item.data === hojeLocal
-    );
-
-  console.log(
-    "HOJE LOCAL:",
-    hojeLocal
-  );
-
-  const agendaConcluidos =
-
-    agendaHoje.filter(item =>
-
-      item.status === "finalizado"
-
-    );
-
-  console.log(
-    "AGENDA HOJE:",
-    agendaHoje
-  );
-
-  console.log(
-    "STATUS AGENDA HOJE:",
-    agendaHoje.map(item => ({
-      hora: item.hora,
-      status: item.status,
-      data: item.data
-    }))
-  );
-
-  const agoraPendencias = new Date();
-
-  const agendaPendentesFinalizacao =
-
-    agendamentos.filter(item => {
-
-      if (
-        item.status === "finalizado" ||
-        item.status === "cancelado"
-      ) {
-        return false;
-      }
-
-      const dataHoraInicio =
+      (
+        new Date() -
         new Date(
-          `${item.data}T${item.hora || "00:00"}`
-        );
+          `${maisAntigaPendencia.data}T${maisAntigaPendencia.hora}`
+        )
+      ) /
 
-      const dataHoraFim =
-        new Date(
-          dataHoraInicio.getTime() +
-          (
-            Number(item.servicoTempoMin || 0)
-            * 60000
-          )
-        );
+      (1000 * 60 * 60 * 24)
 
-      return agoraPendencias > dataHoraFim;
+    )
 
+    : 0;
+
+const totalPendentesFinalizacao =
+  agendaPendentesFinalizacao.length;
+
+const dashboardAlertas =
+  document.getElementById(
+    "dashboard-alertas"
+  );
+
+const alertaPendenciasFixo =
+  document.getElementById(
+    "alerta-pendencias-fixo"
+  );
+
+console.log(
+  "DASHBOARD ALERTAS:",
+  dashboardAlertas
+);
+
+const agora = new Date();
+
+const horaAtual =
+  agoraPendencias.getHours() * 60 +
+  agoraPendencias.getMinutes();
+
+const agendaOrdenada =
+  [...agendaHoje]
+    .sort((a, b) => {
+
+      const [ha, ma] =
+        (a.hora || "00:00")
+          .split(":")
+          .map(Number);
+
+      const [hb, mb] =
+        (b.hora || "00:00")
+          .split(":")
+          .map(Number);
+
+      return (
+        (ha * 60 + ma) -
+        (hb * 60 + mb)
+      );
     });
 
-  console.log(
-    "STATUS AGORA:",
-    agendaHoje.map(item => ({
-      hora: item.hora,
-      status: item.status,
-      servico: item.servicoNome
-    }))
-  );
+let proximoDefinido = false;
 
-  agendaPendentesFinalizacao.forEach(p => {
+agendaOrdenada.forEach(item => {
 
-    const encontrado =
-      agendaHoje.find(
-        item => item.id === p.id
-      );
+  item.atrasado = false;
+  item.proximo = false;
 
-    if (encontrado) {
+  const [h, m] =
+    (item.hora || "00:00")
+      .split(":")
+      .map(Number);
 
-      encontrado.pendenteFinalizacao = true;
+  const horarioItem =
+    h * 60 + m;
 
-    }
+  if (
 
-  });
+    item.data === hojeLocal &&
 
-  const primeiraPendencia =
-    agendaPendentesFinalizacao[0];
+    horarioItem < horaAtual &&
 
-  const maisAntigaPendencia =
-    agendaPendentesFinalizacao
-      .sort(
-        (a, b) =>
-          new Date(`${a.data}T${a.hora}`) -
-          new Date(`${b.data}T${b.hora}`)
-      )[0];
+    item.status !== "atendimento" &&
 
-  console.log(
-    "MAIS ANTIGA:",
-    maisAntigaPendencia
-  );
+    item.status !== "finalizado" &&
 
-  const diasEmAberto =
-    maisAntigaPendencia
+    item.status !== "cancelado"
 
-      ? Math.floor(
+  ) {
 
-        (
-          new Date() -
-          new Date(
-            `${maisAntigaPendencia.data}T${maisAntigaPendencia.hora}`
-          )
-        ) /
+    item.atrasado = true;
 
-        (1000 * 60 * 60 * 24)
+  }
 
-      )
+  if (
+    !proximoDefinido &&
 
-      : 0;
+    item.data === hojeLocal &&
 
-  const totalPendentesFinalizacao =
-    agendaPendentesFinalizacao.length;
+    horarioItem >= horaAtual &&
 
-  const dashboardAlertas =
-    document.getElementById(
-      "dashboard-alertas"
-    );
+    item.status !== "finalizado" &&
 
-  const alertaPendenciasFixo =
-    document.getElementById(
-      "alerta-pendencias-fixo"
-    );
+    item.status !== "cancelado"
 
-  console.log(
-    "DASHBOARD ALERTAS:",
-    dashboardAlertas
-  );
+  ) {
 
-  const agora = new Date();
+    item.proximo = true;
 
-  const horaAtual =
-    agoraPendencias.getHours() * 60 +
-    agoraPendencias.getMinutes();
+    proximoDefinido = true;
+  }
+});
 
-  const agendaOrdenada =
-    [...agendaHoje]
-      .sort((a, b) => {
+const resumo = montarResumoDashboard(agendamentos, profissionais, perfilLogado);
 
-        const [ha, ma] =
-          (a.hora || "00:00")
-            .split(":")
-            .map(Number);
+const esconderFinanceiroGlobal = perfilLogado?.tipoAcesso === "profissional_admin";
 
-        const [hb, mb] =
-          (b.hora || "00:00")
-            .split(":")
-            .map(Number);
-
-        return (
-          (ha * 60 + ma) -
-          (hb * 60 + mb)
-        );
-      });
-
-  let proximoDefinido = false;
-
-  agendaOrdenada.forEach(item => {
-
-    item.atrasado = false;
-    item.proximo = false;
-
-    const [h, m] =
-      (item.hora || "00:00")
-        .split(":")
-        .map(Number);
-
-    const horarioItem =
-      h * 60 + m;
-
-    if (
-
-      item.data === hojeLocal &&
-
-      horarioItem < horaAtual &&
-
-      item.status !== "atendimento" &&
-
-      item.status !== "finalizado" &&
-
-      item.status !== "cancelado"
-
-    ) {
-
-      item.atrasado = true;
-
-    }
-
-    if (
-      !proximoDefinido &&
-
-      item.data === hojeLocal &&
-
-      horarioItem >= horaAtual &&
-
-      item.status !== "finalizado" &&
-
-      item.status !== "cancelado"
-
-    ) {
-
-      item.proximo = true;
-
-      proximoDefinido = true;
-    }
-  });
-
-  const resumo = montarResumoDashboard(agendamentos, profissionais, perfilLogado);
-
-  const esconderFinanceiroGlobal = perfilLogado?.tipoAcesso === "profissional_admin";
-
-  dashboardResumo.innerHTML = `
+dashboardResumo.innerHTML = `
 
       <div class="kpi-card">
     <span>📅 Hoje</span>
@@ -1821,7 +1818,7 @@ async function carregarDashboard() {
       </div>
 
   ${esconderFinanceiroGlobal
-      ? `
+    ? `
         <div class="kpi-card">
           <span>💰 Meu Hoje</span>
           <strong>
@@ -1838,7 +1835,7 @@ async function carregarDashboard() {
           <small>Faturamento</small>
         </div>
       `
-      : `
+    : `
         <div class="kpi-card">
           <span>💰 Hoje</span>
           <strong>
@@ -1855,7 +1852,7 @@ async function carregarDashboard() {
           <small>Faturamento</small>
         </div>
       `
-    }
+  }
 
     <div class="kpi-card">
       <span>👥 Ativos</span>
@@ -1865,13 +1862,13 @@ async function carregarDashboard() {
 
     `;
 
-  if (alertaPendenciasFixo) {
+if (alertaPendenciasFixo) {
 
-    alertaPendenciasFixo.innerHTML =
+  alertaPendenciasFixo.innerHTML =
 
-      totalPendentesFinalizacao
+    totalPendentesFinalizacao
 
-        ? `
+      ? `
 
       <div class="alerta-operacional">
 
@@ -1918,8 +1915,8 @@ async function carregarDashboard() {
 
           <strong>
             ${maisAntigaPendencia?.dataBR ||
-        maisAntigaPendencia?.data ||
-        ""}
+      maisAntigaPendencia?.data ||
+      ""}
           </strong>
 
           <strong>
@@ -1963,66 +1960,66 @@ async function carregarDashboard() {
 
     `
 
-        : "";
+      : "";
 
-    alertaPendenciasFixo.style.display =
-      "block";
+  alertaPendenciasFixo.style.display =
+    "block";
 
 
 
-    alertaPendenciasFixo.style.display =
-      totalPendentesFinalizacao
-        ? "block"
-        : "none";
+  alertaPendenciasFixo.style.display =
+    totalPendentesFinalizacao
+      ? "block"
+      : "none";
 
-  }
+}
 
-  if (!agendamentos.length) {
+if (!agendamentos.length) {
 
-    montarGraficoFaturamento([]);
+  montarGraficoFaturamento([]);
 
-    agendaOperacionalLista.innerHTML = `
+  agendaOperacionalLista.innerHTML = `
       <div class="agenda-geral-vazia">
         Nenhum atendimento hoje
       </div>
     `;
 
-    agendaConcluidosLista.innerHTML = `
+  agendaConcluidosLista.innerHTML = `
       <div class="agenda-geral-vazia">
         Nenhum atendimento finalizado hoje
       </div>
     `;
 
-    return;
+  return;
 
-  }
+}
 
-  montarGraficoFaturamento(agendamentos);
+montarGraficoFaturamento(agendamentos);
 
-  const agendaOperacional =
+const agendaOperacional =
 
-    agendaOrdenada.filter(item =>
+  agendaOrdenada.filter(item =>
 
-      item.status !== "finalizado"
+    item.status !== "finalizado"
 
-    );
-
-  console.log(
-    "PENDENTES FINALIZACAO:",
-    agendaPendentesFinalizacao
   );
 
-  agendaOperacionalLista.innerHTML =
+console.log(
+  "PENDENTES FINALIZACAO:",
+  agendaPendentesFinalizacao
+);
 
-    agendaOperacional.length
+agendaOperacionalLista.innerHTML =
 
-      ? `
+  agendaOperacional.length
+
+    ? `
 
 <div class="agenda-geral-grid">
 
 ${agendaOperacional
 
-        .map(item => `
+      .map(item => `
 
 <div
   data-agendamento-id="${item.id}"
@@ -2133,7 +2130,7 @@ ${agendaOperacional
 
 `
 
-      : `
+    : `
 
 <div class="agenda-geral-vazia">
 
@@ -2143,7 +2140,7 @@ ${agendaOperacional
 
 `;
 
-  agendaConcluidosLista.innerHTML = `
+agendaConcluidosLista.innerHTML = `
 
       <div class="agenda-operacional-grid">
 
@@ -2188,7 +2185,7 @@ ${agendaOperacional
 
 `).join("")
 
-    }
+  }
 
 </div>
       `;
